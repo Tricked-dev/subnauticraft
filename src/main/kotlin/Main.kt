@@ -77,10 +77,17 @@ fun main(args: Array<String>) {
 
     val instanceContainer = instanceManager.createInstanceContainer(fullbright)
 
+        var done =false;
+
     instanceContainer.setGenerator { unit: GenerationUnit ->
         unit.modifier().fillHeight(0, 40, Block.GRASS_BLOCK)
-        unit.modifier().fill(Pos(0.0, 30.0, 0.0), Pos(5.0, 40.0, 5.0), Block.WATER)
+        if(!done) {
+            unit.modifier().fill(Pos(0.0, 30.0, 0.0), Pos(5.0, 40.0, 5.0), Block.WATER)
+done=true;
+        }
     }
+
+
 
     instanceContainer.worldBorder.setDiameter(50.0, 20)
 
@@ -90,6 +97,8 @@ fun main(args: Array<String>) {
     instanceContainer.setBlock(
         Pos(1.0, 41.0, 1.0), Block.CRAFTING_TABLE
     )
+    instanceContainer.setBlock(Pos(2.0,30.0,2.0), Block.TUBE_CORAL)
+
     MinecraftServer.getGlobalEventHandler().addListener(
         ServerListPingEvent::class.java
     ) { event: ServerListPingEvent ->

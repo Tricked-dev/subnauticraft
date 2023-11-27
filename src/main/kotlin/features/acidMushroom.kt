@@ -1,20 +1,42 @@
 package dev.tricked.subnauticraft.features
 
-import net.minestom.server.coordinate.Pos
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.format.NamedTextColor
+import net.minestom.server.effects.Effects
+import net.minestom.server.entity.Player
 import net.minestom.server.event.EventNode
 import net.minestom.server.event.instance.InstanceRegisterEvent
 import net.minestom.server.event.player.PlayerBlockInteractEvent
 import net.minestom.server.instance.block.Block
+import net.minestom.server.instance.block.BlockFace
+import net.minestom.server.item.ItemStack
+import net.minestom.server.item.Material
+import net.minestom.server.network.packet.server.play.EffectPacket
+import net.minestom.server.tag.Tag
+import net.minestom.server.utils.PacketUtils
+
 
 object AcidMushroom {
+    val durabilityLeft = Tag.Integer("durabilityLeft").defaultValue(3)
     val events = EventNode.all("mushroom")
         .addListener(InstanceRegisterEvent::class.java) {event ->
-                event.instance.setBlock(Pos(2.0,30.0,2.0), Block.TUBE_CORAL)
 
         }
         .addListener(PlayerBlockInteractEvent::class.java) {event:PlayerBlockInteractEvent->
-            if (event.block== Block.TUBE_CORAL)  {
+            println("Event! ${event.block} ${event.block.name()}")
+            if (event.block.name() == "minecraft:tube_coral")  {
+                val value = event.block.getTag(durabilityLeft)
+                if(value == 1) {
+                    event.player.instance.breakBlock( event.player, event.blockPosition, BlockFace.TOP)
+                    event.player.instance.setBlock(event.blockPosition, Block.WATER)
 
+                } else {
+                    val block = event.block.withTag(durabilityLeft, value - 1)
+                    event.player.instance.setBlock(event.blockPosition, block)
+                }
+                event.player.inventory.addItemStack(
+                    ItemStack.of(Material.GLOW_BERRIES).withDisplayName(Component.text("Acid Mushroom", NamedTextColor.DARK_PURPLE))
+                )
             }
         }
 }
