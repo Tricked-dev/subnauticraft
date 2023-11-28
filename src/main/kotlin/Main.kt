@@ -118,7 +118,7 @@ done=true;
     val handler = EventNode.all("subnauticraft")
         .addListener<PlayerLoginEvent>(PlayerLoginEvent::class.java) { event: PlayerLoginEvent ->
             event.setSpawningInstance(instanceContainer)
-            event.player.gameMode = GameMode.CREATIVE
+            event.player.gameMode = GameMode.SURVIVAL
             event.player.respawnPoint = Pos(0.0, 42.0, 0.0)
         }.addListener(PlayerBlockInteractEvent::class.java) { event: PlayerBlockInteractEvent ->
             if (event.block == Block.CRAFTING_TABLE) {

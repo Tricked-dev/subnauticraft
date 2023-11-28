@@ -7,7 +7,10 @@ import net.minestom.server.effects.Effects
 import net.minestom.server.entity.Player
 import net.minestom.server.event.EventNode
 import net.minestom.server.event.instance.InstanceRegisterEvent
+import net.minestom.server.event.item.ItemDropEvent
+import net.minestom.server.event.player.PlayerBlockBreakEvent
 import net.minestom.server.event.player.PlayerBlockInteractEvent
+import net.minestom.server.event.player.PlayerBlockPlaceEvent
 import net.minestom.server.instance.block.Block
 import net.minestom.server.instance.block.BlockFace
 import net.minestom.server.item.ItemStack
@@ -22,6 +25,15 @@ object AcidMushroom {
     val events = EventNode.all("mushroom")
         .addListener(InstanceRegisterEvent::class.java) {event ->
 
+        }
+        .addListener(ItemDropEvent::class.java) {event:ItemDropEvent ->
+          event.isCancelled = true;
+        }
+        .addListener(PlayerBlockPlaceEvent::class.java) {event:PlayerBlockPlaceEvent ->
+            event.isCancelled=true
+        }
+        .addListener(PlayerBlockBreakEvent::class.java) {event:PlayerBlockBreakEvent ->
+            event.isCancelled=true
         }
         .addListener(PlayerBlockInteractEvent::class.java) {event:PlayerBlockInteractEvent->
             println("Event! ${event.block} ${event.block.name()}")

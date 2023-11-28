@@ -19,10 +19,14 @@ object Weight {
         val totalWeight = event.player.inventory.itemStacks
             .filter { !it.isAir  && it.material() != Material.BAMBOO}
             .sumOf { it.getTag(Utils.weightTag) }
+//        if (!event.player.inventory.hel.isAir && event.player.inventory.cursorItem.material() != Material.BAMBOO) {
+//            totalWeight += event.player.inventory.cursorItem.getTag(Utils.weightTag)
+//        }
+
         val totalCount = event.player.inventory.itemStacks.count { !it.isAir && it.material() != Material.BAMBOO }
         println("Totl count: $totalCount")
         val usableCount = 36;
-        val removeFrom = usableCount - totalWeight  + totalCount
+        val removeFrom = usableCount - totalWeight   + totalCount
         for(i in removeFrom..<usableCount) {
             println("Removing $i")
             event.player.inventory.setItemStack(i, ItemStack.of(Material.BAMBOO))
