@@ -35,6 +35,7 @@ object Oxygen {
             val player = event.player
             if (packet is ClientPlayerPositionPacket) {
                 val inventory = player.inventory
+                if(inventory.chestplate.isAir) return@addListener
                 val seconds = inventory.chestplate.getTag(durationTag)
                 val since = inventory.chestplate.getTag(swimmingSince)
                 val swimming = player.instance.getBlock(player.position).isLiquid

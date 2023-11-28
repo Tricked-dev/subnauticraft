@@ -9,7 +9,7 @@ import java.util.UUID
 
 object Utils {
     private val idTag = Tag.String("id")
-    private  val weightTag = Tag.Integer("weight")
+     val weightTag = Tag.Integer("weight")
     fun createItem(material: Material, name: Component, lore: Component = Component.empty(), weight: Int = 1): ItemStack.Builder {
         val item = ItemStack.builder(material).displayName(name).lore(lore,
             Component.text("Weight $weight", NamedTextColor.GRAY)

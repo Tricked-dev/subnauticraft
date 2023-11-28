@@ -3,6 +3,7 @@ package dev.tricked.subnauticraft
 import dev.tricked.subnauticraft.features.AcidMushroom
 import dev.tricked.subnauticraft.features.Oxygen
 import dev.tricked.subnauticraft.features.ServerListPingHandler
+import dev.tricked.subnauticraft.features.Weight
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import net.minestom.server.MinecraftServer
@@ -97,7 +98,16 @@ done=true;
     instanceContainer.setBlock(
         Pos(1.0, 41.0, 1.0), Block.CRAFTING_TABLE
     )
+
+    instanceContainer.setBlock(
+        Pos(6.0, 40.0, 3.0), Block.CACTUS
+    )
     instanceContainer.setBlock(Pos(2.0,30.0,2.0), Block.TUBE_CORAL)
+    instanceContainer.setBlock(Pos(3.0,30.0,2.0), Block.TUBE_CORAL)
+    instanceContainer.setBlock(Pos(4.0,30.0,2.0), Block.TUBE_CORAL)
+    instanceContainer.setBlock(Pos(4.0,30.0,3.0), Block.TUBE_CORAL)
+    instanceContainer.setBlock(Pos(4.0,30.0,4.0), Block.TUBE_CORAL)
+    instanceContainer.setBlock(Pos(3.0,30.0,3.0), Block.TUBE_CORAL)
 
     MinecraftServer.getGlobalEventHandler().addListener(
         ServerListPingEvent::class.java
@@ -115,6 +125,7 @@ done=true;
                 event.player.openInventory(Inventory(InventoryType.CRAFTING, "Fabricator (Open Book)"))
             }
         }
+    eventHandler.addChild(Weight.events)
     eventHandler.addChild(handler)
 
     OpenToLAN.open(OpenToLANConfig().eventCallDelay(Duration.of(1, TimeUnit.DAY)))

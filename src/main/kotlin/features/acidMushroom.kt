@@ -41,5 +41,22 @@ object AcidMushroom {
                     )).build()
                 )
             }
+
+            if (event.block.name() == "minecraft:cactus")  {
+                val value = event.block.getTag(durabilityLeft)
+                if(value == 1) {
+                    event.player.instance.breakBlock( event.player, event.blockPosition, BlockFace.TOP)
+                    event.player.instance.setBlock(event.blockPosition, Block.AIR)
+
+                } else {
+                    val block = event.block.withTag(durabilityLeft, value - 1)
+                    event.player.instance.setBlock(event.blockPosition, block)
+                }
+                event.player.inventory.addItemStack(
+                    Utils.createItem(Material.GREEN_DYE, Component.text("Cactus",
+                        NamedTextColor.DARK_GREEN
+                    ), Component.text("Very kewl", NamedTextColor.RED), 2).build()
+                )
+            }
         }
 }
