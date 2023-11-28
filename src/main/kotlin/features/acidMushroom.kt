@@ -1,5 +1,6 @@
 package dev.tricked.subnauticraft.features
 
+import dev.tricked.subnauticraft.Utils
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import net.minestom.server.effects.Effects
@@ -35,7 +36,9 @@ object AcidMushroom {
                     event.player.instance.setBlock(event.blockPosition, block)
                 }
                 event.player.inventory.addItemStack(
-                    ItemStack.of(Material.GLOW_BERRIES).withDisplayName(Component.text("Acid Mushroom", NamedTextColor.DARK_PURPLE))
+                    Utils.createItem(Material.GLOW_BERRIES, Component.text("Acid Mushroom",
+                        NamedTextColor.DARK_PURPLE
+                    )).build()
                 )
             }
         }

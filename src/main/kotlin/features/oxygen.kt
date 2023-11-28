@@ -1,5 +1,8 @@
 package dev.tricked.subnauticraft.features
 
+import dev.tricked.subnauticraft.Utils
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.format.NamedTextColor
 import net.minestom.server.event.EventNode
 import net.minestom.server.event.player.PlayerLoginEvent
 import net.minestom.server.event.player.PlayerPacketEvent
@@ -13,18 +16,19 @@ object Oxygen {
     private val durationLeft = Tag.Integer("durationLeft")
     private val swimmingSince = Tag.Long("swimmingSince")
 
+    private fun createBreather(duration: Int): ItemStack {
+        val breather= Utils.createItem(Material.GOLDEN_CHESTPLATE, Component.text("Breather", NamedTextColor.GOLD), Component.text("Total Duration: $duration"),4)
+        breather.setTag(durationLeft, duration);
+        breather.setTag(durationTag, duration)
+        breather.setTag(swimmingSince, -1)
+        return breather.build()
+    }
+
     val events = EventNode.all("oxygen")
         .addListener(PlayerLoginEvent::class.java) { event: PlayerLoginEvent ->
-            val item = ItemStack.of(Material.GOLDEN_CHESTPLATE).withTag(durationTag, 60).withTag(durationLeft, 60)
-                .withTag(swimmingSince, -1)
-            val item2 = ItemStack.of(Material.GOLDEN_CHESTPLATE).withTag(durationTag, 5).withTag(durationLeft, 5)
-                .withTag(swimmingSince, -1)
-            val item3 = ItemStack.of(Material.GOLDEN_CHESTPLATE).withTag(durationTag, 600).withTag(durationLeft, 600)
-                .withTag(swimmingSince, -1)
-
-            event.player.inventory.addItemStack(item)
-            event.player.inventory.addItemStack(item2)
-            event.player.inventory.addItemStack(item3)
+            event.player.inventory.addItemStack(createBreather(60))
+            event.player.inventory.addItemStack(createBreather(5))
+            event.player.inventory.addItemStack(createBreather(600))
         }
         .addListener(PlayerPacketEvent::class.java) { event: PlayerPacketEvent ->
             val packet = event.packet
