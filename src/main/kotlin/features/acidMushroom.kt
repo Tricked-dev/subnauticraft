@@ -67,7 +67,18 @@ object AcidMushroom {
                 event.player.inventory.addItemStack(
                     Utils.createItem(Material.GREEN_DYE, Component.text("Cactus",
                         NamedTextColor.DARK_GREEN
-                    ), Component.text("Very kewl", NamedTextColor.RED), 2).build()
+                    ), arrayOf(Component.text("Very kewl", NamedTextColor.RED)), 2).build()
+                )
+            }
+
+            if (event.block.name() == "minecraft:wheat")  {
+                event.player.instance.breakBlock( event.player, event.blockPosition, BlockFace.TOP)
+                event.player.instance.setBlock(event.blockPosition, Block.AIR)
+
+                event.player.inventory.addItemStack(
+                    Utils.createFoodItem(Material.POTATO, Component.text("Lantern Fruit",
+                        NamedTextColor.DARK_GREEN
+                    ), arrayOf(Component.text("Very nurishing", NamedTextColor.RED)), 4, 8).build()
                 )
             }
         }

@@ -17,7 +17,7 @@ object Oxygen {
     private val swimmingSince = Tag.Long("swimmingSince")
 
     private fun createBreather(duration: Int): ItemStack {
-        val breather= Utils.createItem(Material.GOLDEN_CHESTPLATE, Component.text("Breather", NamedTextColor.GOLD), Component.text("Total Duration: $duration"),4)
+        val breather= Utils.createItem(Material.GOLDEN_CHESTPLATE, Component.text("Breather", NamedTextColor.GOLD), arrayOf(Component.text("Total Duration: $duration")),4)
         breather.setTag(durationLeft, duration);
         breather.setTag(durationTag, duration)
         breather.setTag(swimmingSince, -1)

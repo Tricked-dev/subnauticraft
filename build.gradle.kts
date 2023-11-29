@@ -19,6 +19,8 @@ repositories {
 dependencies {
     implementation("dev.hollowcube:minestom-ce:8715f4305d")
     runtimeOnly("ch.qos.logback:logback-core:1.3.5")
+
+    compileOnly("com.github.EmortalMC:Rayfast:7975ac5e4c")
 }
 
 kotlin {

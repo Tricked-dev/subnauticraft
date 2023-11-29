@@ -1,13 +1,12 @@
 package dev.tricked.subnauticraft
 
-import dev.tricked.subnauticraft.features.AcidMushroom
-import dev.tricked.subnauticraft.features.Oxygen
-import dev.tricked.subnauticraft.features.ServerListPingHandler
-import dev.tricked.subnauticraft.features.Weight
+import dev.tricked.subnauticraft.features.*
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import net.minestom.server.MinecraftServer
 import net.minestom.server.coordinate.Pos
+import net.minestom.server.entity.Entity
+import net.minestom.server.entity.EntityType
 import net.minestom.server.entity.GameMode
 import net.minestom.server.entity.Player
 import net.minestom.server.event.EventNode
@@ -24,6 +23,7 @@ import net.minestom.server.item.ItemStack
 import net.minestom.server.item.Material
 import net.minestom.server.network.packet.server.play.DeclareRecipesPacket.Ingredient
 import net.minestom.server.recipe.ShapelessRecipe
+import net.minestom.server.timer.Scheduler
 import net.minestom.server.utils.NamespaceID
 import net.minestom.server.utils.time.TimeUnit
 import net.minestom.server.world.DimensionType
@@ -84,11 +84,9 @@ fun main(args: Array<String>) {
         unit.modifier().fillHeight(0, 40, Block.GRASS_BLOCK)
         if(!done) {
             unit.modifier().fill(Pos(0.0, 30.0, 0.0), Pos(5.0, 40.0, 5.0), Block.WATER)
-done=true;
+            done=true;
         }
     }
-
-
 
     instanceContainer.worldBorder.setDiameter(50.0, 20)
 
@@ -109,23 +107,56 @@ done=true;
     instanceContainer.setBlock(Pos(4.0,30.0,4.0), Block.TUBE_CORAL)
     instanceContainer.setBlock(Pos(3.0,30.0,3.0), Block.TUBE_CORAL)
 
+
+    instanceContainer.setBlock(
+        Pos(-6.0, 40.0, -4.0), Block.WHEAT.withProperty("age","6")
+    )
+    instanceContainer.setBlock(
+        Pos(-6.0, 39.0, -4.0), Block.FARMLAND
+    )
+
+    instanceContainer.setBlock(
+        Pos(-7.0, 40.0, -4.0), Block.WHEAT.withProperty("age","6")
+    )
+    instanceContainer.setBlock(
+        Pos(-7.0, 39.0, -4.0), Block.FARMLAND
+    )
+
+    instanceContainer.setBlock(
+        Pos(-8.0, 40.0, -4.0), Block.WHEAT.withProperty("age","6")
+    )
+    instanceContainer.setBlock(
+        Pos(-8.0, 39.0, -4.0), Block.FARMLAND
+    )
+
+    val horse = Entity(EntityType.HORSE)
+
+    horse.setInstance(instanceContainer, Pos(-4.0, 42.0, -10.0))
+
     MinecraftServer.getGlobalEventHandler().addListener(
         ServerListPingEvent::class.java
     ) { event: ServerListPingEvent ->
         ServerListPingHandler.handlePingEvent(event)
     }
 
+
+
     val handler = EventNode.all("subnauticraft")
         .addListener<PlayerLoginEvent>(PlayerLoginEvent::class.java) { event: PlayerLoginEvent ->
             event.setSpawningInstance(instanceContainer)
             event.player.gameMode = GameMode.SURVIVAL
             event.player.respawnPoint = Pos(0.0, 42.0, 0.0)
+            val scheduler: Scheduler = event.player.scheduler()
+            scheduler.scheduleNextTick {
+                event.player.food = 8
+            }
         }.addListener(PlayerBlockInteractEvent::class.java) { event: PlayerBlockInteractEvent ->
             if (event.block == Block.CRAFTING_TABLE) {
                 event.player.openInventory(Inventory(InventoryType.CRAFTING, "Fabricator (Open Book)"))
             }
         }
     eventHandler.addChild(Weight.events)
+    eventHandler.addChild(Food.events)
     eventHandler.addChild(handler)
 
     OpenToLAN.open(OpenToLANConfig().eventCallDelay(Duration.of(1, TimeUnit.DAY)))
