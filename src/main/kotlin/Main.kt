@@ -2,6 +2,8 @@ package dev.tricked.subnauticraft
 
 import dev.tricked.subnauticraft.Utils.pickupableTag
 import dev.tricked.subnauticraft.features.*
+import net.hollowcube.util.schem.Rotation
+import net.hollowcube.util.schem.SchematicReader
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import net.minestom.server.MinecraftServer
@@ -29,8 +31,8 @@ import net.minestom.server.timer.Scheduler
 import net.minestom.server.utils.NamespaceID
 import net.minestom.server.utils.time.TimeUnit
 import net.minestom.server.world.DimensionType
+import java.nio.file.Path
 import java.time.Duration
-
 
 class Titanium : ShapelessRecipe(
     "titanium",
@@ -169,10 +171,13 @@ fun main(args: Array<String>) {
 
 
 
+    var schematic = SchematicReader.read(Path.of("./schem/worldedit/spawn.schem"));
+    schematic.build(Rotation.NONE, null).apply(instanceContainer, 10, 37, -10, null);
+
     val handler = EventNode.all("subnauticraft")
         .addListener<PlayerLoginEvent>(PlayerLoginEvent::class.java) { event: PlayerLoginEvent ->
             event.setSpawningInstance(instanceContainer)
-            event.player.gameMode = GameMode.SURVIVAL
+            event.player.gameMode = GameMode.CREATIVE
             event.player.respawnPoint = Pos(0.0, 42.0, 0.0)
             val scheduler: Scheduler = event.player.scheduler()
             scheduler.scheduleNextTick {
@@ -186,6 +191,7 @@ fun main(args: Array<String>) {
     eventHandler.addChild(Weight.events)
     eventHandler.addChild(Pickup.events)
     eventHandler.addChild(Food.events)
+    eventHandler.addChild(Trapdoors.events)
     eventHandler.addChild(handler)
 
     OpenToLAN.open(OpenToLANConfig().eventCallDelay(Duration.of(1, TimeUnit.DAY)))

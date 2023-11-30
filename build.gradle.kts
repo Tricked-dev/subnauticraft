@@ -13,6 +13,9 @@ version = "0.1.0"
 repositories {
     mavenCentral()
     maven(url = "https://jitpack.io")
+    maven(url = "https://repo.spongepowered.org/maven")
+    maven(url = "https://repo.minestom.com/repository/maven-public/")
+    maven(url = "https://repo.velocitypowered.com/snapshots/")
 }
 
 
@@ -20,6 +23,8 @@ dependencies {
     implementation("dev.hollowcube:minestom-ce:8715f4305d")
     implementation("com.github.hollow-cube.common:schem:db5eab9512")
     implementation("com.github.EmortalMC:Rayfast:7975ac5e4c")
+//    implementation("com.github.Project-Cepi:KStom:latest")
+    implementation("com.github.Project-Cepi:Particable:acea414be2")
     runtimeOnly("ch.qos.logback:logback-core:1.3.5")
 
 }
