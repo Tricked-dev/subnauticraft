@@ -1,5 +1,6 @@
 package dev.tricked.subnauticraft
 
+import dev.tricked.subnauticraft.Utils.pickupableTag
 import dev.tricked.subnauticraft.features.*
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
@@ -15,6 +16,7 @@ import net.minestom.server.event.player.PlayerLoginEvent
 import net.minestom.server.event.server.ServerListPingEvent
 import net.minestom.server.extras.lan.OpenToLAN
 import net.minestom.server.extras.lan.OpenToLANConfig
+import net.minestom.server.instance.Instance
 import net.minestom.server.instance.block.Block
 import net.minestom.server.instance.generator.GenerationUnit
 import net.minestom.server.inventory.Inventory
@@ -47,6 +49,12 @@ class Titanium : ShapelessRecipe(
     }
 }
 
+fun entityLoL(instance: Instance, entityType: EntityType, pos: Pos) {
+    val horse = Entity(entityType)
+    horse.setTag(pickupableTag, true)
+
+    horse.setInstance(instance,pos)
+}
 
 fun main(args: Array<String>) {
     System.setProperty("minestom.use-new-chunk-sending", "true")
@@ -107,6 +115,28 @@ fun main(args: Array<String>) {
     instanceContainer.setBlock(Pos(4.0,30.0,4.0), Block.TUBE_CORAL)
     instanceContainer.setBlock(Pos(3.0,30.0,3.0), Block.TUBE_CORAL)
 
+    entityLoL(
+        instanceContainer,
+        EntityType.HORSE,
+        Pos(-5.0, 40.0, -4.0)
+    )
+    entityLoL(
+        instanceContainer,
+        EntityType.HORSE,
+        Pos(-5.0, 40.0, -6.0)
+    )
+
+
+
+    for(i in 0..10) {
+        for (j in 0..10) {
+            entityLoL(
+                instanceContainer,
+                EntityType.CAT,
+                Pos(-1.0 + i.toFloat()/5, 40.0, -10.0 + (j.toFloat())/5)
+            )
+        }
+    }
 
     instanceContainer.setBlock(
         Pos(-6.0, 40.0, -4.0), Block.WHEAT.withProperty("age","6")
@@ -129,9 +159,7 @@ fun main(args: Array<String>) {
         Pos(-8.0, 39.0, -4.0), Block.FARMLAND
     )
 
-    val horse = Entity(EntityType.HORSE)
 
-    horse.setInstance(instanceContainer, Pos(-4.0, 42.0, -10.0))
 
     MinecraftServer.getGlobalEventHandler().addListener(
         ServerListPingEvent::class.java
@@ -156,6 +184,7 @@ fun main(args: Array<String>) {
             }
         }
     eventHandler.addChild(Weight.events)
+    eventHandler.addChild(Pickup.events)
     eventHandler.addChild(Food.events)
     eventHandler.addChild(handler)
 

@@ -12,6 +12,8 @@ import net.minestom.server.item.Material
 import net.minestom.server.tag.Tag
 import java.util.UUID
 import dev.emortal.rayfast.area.area3d.Area3d
+import dev.emortal.rayfast.area.area3d.Area3d.Area3dCombined
+import dev.emortal.rayfast.area.area3d.Area3dLike
 import dev.emortal.rayfast.area.area3d.Area3dRectangularPrism
 import dev.emortal.rayfast.casting.grid.GridCast
 import dev.emortal.rayfast.vector.Vector3d
@@ -20,6 +22,8 @@ object Utils {
     private val idTag = Tag.String("id")
     val weightTag = Tag.Integer("weight")
     val nutishmentTag = Tag.Integer("nutishment")
+    val pickupableTag = Tag.Boolean("pickupable")
+
     fun createItem(material: Material, name: Component, lore: Array<out Component> = emptyArray(), weight: Int = 1): ItemStack.Builder {
         val item = ItemStack.builder(material).displayName(name).lore(
             *lore,
@@ -36,6 +40,26 @@ object Utils {
         return item
     }
 
+    private val boundingBoxToArea3dMap = HashMap<LinkedBoundingBox, Area3d>()
+
+
+    init {
+        Area3d.CONVERTER.register(LinkedBoundingBox::class.java) { box ->
+
+            boundingBoxToArea3dMap.computeIfAbsent(box) { it ->
+                Area3dRectangularPrism.wrapper(
+                    it,
+                    { it.minX }, { it.minY }, { it.minZ },
+                    { it.maxX }, { it.maxY }, { it.maxZ }
+                )
+            }
+
+            boundingBoxToArea3dMap[box]
+        }
+    }
+
+    val Entity.area3d: Area3d
+        get() = Area3d.CONVERTER.from(boundingBox.toLinked(this))
 
     fun raycastEntity(
         instance: Instance,
@@ -49,12 +73,7 @@ object Utils {
             .filter { hitFilter.invoke(it) }
             .filter { it.position.distanceSquared(startPoint) <= maxDistance * maxDistance }
             .forEach {
-                val box = it.boundingBox
-                val area = Area3dRectangularPrism.of(
-                        box.minY(), box.minZ(), box.minX(), box.maxY(), box.maxZ(), box.maxX()
-                )
-
-                //val intersection = it.boundingBox.boundingBoxRayIntersectionCheck(startPoint.asVec(), direction, it.position)
+                val area = it.area3d
 
                 val intersection = area.lineIntersection(
                     Vector3d.of(startPoint.x(), startPoint.y(), startPoint.z()),
