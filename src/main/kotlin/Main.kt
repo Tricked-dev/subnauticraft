@@ -174,10 +174,13 @@ fun main(args: Array<String>) {
         ServerListPingHandler.handlePingEvent(event)
     }
 
+    fun placeSchemetic(instance: Instance, name:String, pos:Pos, rotation: Rotation = Rotation.NONE) {
+        var schematic = SchematicReader.read(Path.of("./schem/"+name+".schem"))
+        schematic.build(rotation, null).apply(instance, pos.x.toInt(), pos.y.toInt(), pos.z.toInt(), null)
+    }
 
-
-    var schematic = SchematicReader.read(Path.of("./schem/worldedit/spawn.schem"));
-    schematic.build(Rotation.NONE, null).apply(instanceContainer, 10, 37, -10, null);
+    placeSchemetic(instanceContainer, "spawn", Pos(-10.0, 40.0, -10.0))
+    placeSchemetic(instanceContainer, "repairtool", Pos(10.0, 40.0, 10.0), Rotation.CLOCKWISE_180)
 
     val handler = EventNode.all("subnauticraft")
         .addListener<PlayerLoginEvent>(PlayerLoginEvent::class.java) { event: PlayerLoginEvent ->
@@ -209,6 +212,7 @@ fun main(args: Array<String>) {
     eventHandler.addChild(Pickup.events)
     eventHandler.addChild(Food.events)
     eventHandler.addChild(Trapdoors.events)
+    eventHandler.addChild(RepairTool.events)
     eventHandler.addChild(handler)
 
     OpenToLAN.open(OpenToLANConfig().eventCallDelay(Duration.of(1, TimeUnit.DAY)))

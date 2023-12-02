@@ -6,7 +6,6 @@ import net.minestom.server.event.player.PlayerBlockInteractEvent
 
 object Trapdoors {
     val events = EventNode.all("trapdoors").addListener(PlayerBlockInteractEvent::class.java) { event ->
-        event.isCancelled = true
         if (event.block.name().contains("trapdoor")) {
             if(event.player.position.y > event.blockPosition.y()) {
                 event.player.teleport(
