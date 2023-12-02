@@ -2,11 +2,12 @@ package dev.tricked.subnauticraft
 
 import dev.tricked.subnauticraft.Utils.pickupableTag
 import dev.tricked.subnauticraft.features.*
-import net.hollowcube.util.schem.Rotation
-import net.hollowcube.util.schem.SchematicReader
+import net.hollowcube.schem.Rotation
+import net.hollowcube.schem.SchematicReader
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import net.minestom.server.MinecraftServer
+import net.minestom.server.coordinate.Point
 import net.minestom.server.coordinate.Pos
 import net.minestom.server.entity.Entity
 import net.minestom.server.entity.EntityType
@@ -31,6 +32,11 @@ import net.minestom.server.timer.Scheduler
 import net.minestom.server.utils.NamespaceID
 import net.minestom.server.utils.time.TimeUnit
 import net.minestom.server.world.DimensionType
+import world.cepi.particle.PacketFactory
+import world.cepi.particle.Particle
+import world.cepi.particle.ParticleType
+import world.cepi.particle.data.OffsetAndSpeed
+import world.cepi.particle.showParticle
 import java.nio.file.Path
 import java.time.Duration
 
@@ -60,7 +66,6 @@ fun entityLoL(instance: Instance, entityType: EntityType, pos: Pos) {
 
 fun main(args: Array<String>) {
     System.setProperty("minestom.use-new-chunk-sending", "true")
-
 
     val minecraftServer = MinecraftServer.init()
 
@@ -177,11 +182,23 @@ fun main(args: Array<String>) {
     val handler = EventNode.all("subnauticraft")
         .addListener<PlayerLoginEvent>(PlayerLoginEvent::class.java) { event: PlayerLoginEvent ->
             event.setSpawningInstance(instanceContainer)
-            event.player.gameMode = GameMode.CREATIVE
+            event.player.gameMode = GameMode.SURVIVAL
             event.player.respawnPoint = Pos(0.0, 42.0, 0.0)
             val scheduler: Scheduler = event.player.scheduler()
             scheduler.scheduleNextTick {
                 event.player.food = 8
+
+                val particle = Particle.particle(
+                    type = ParticleType.HAPPY_VILLAGER,
+                    count = 5,
+                    data = OffsetAndSpeed(0.5f, 1f, 0.5f, 0.2f)
+                )
+
+                event.player.particle(
+                    particle,
+                    Pos(0.0, 42.0, 0.0)
+                )
+
             }
         }.addListener(PlayerBlockInteractEvent::class.java) { event: PlayerBlockInteractEvent ->
             if (event.block == Block.CRAFTING_TABLE) {
@@ -198,6 +215,10 @@ fun main(args: Array<String>) {
 
 
     minecraftServer.start("0.0.0.0", 25565)
+}
+
+fun Player.particle(particle: Particle<*, *>, renderer: Point) {
+    this.playerConnection.sendPacket(PacketFactory.createParticlePacket(particle, renderer))
 }
 
 

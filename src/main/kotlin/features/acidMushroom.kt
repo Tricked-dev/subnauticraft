@@ -1,6 +1,7 @@
 package dev.tricked.subnauticraft.features
 
 import dev.tricked.subnauticraft.Utils
+import dev.tricked.subnauticraft.particle
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import net.minestom.server.effects.Effects
@@ -18,6 +19,10 @@ import net.minestom.server.item.Material
 import net.minestom.server.network.packet.server.play.EffectPacket
 import net.minestom.server.tag.Tag
 import net.minestom.server.utils.PacketUtils
+import world.cepi.particle.Particle
+import world.cepi.particle.ParticleType
+import world.cepi.particle.data.OffsetAndSpeed
+import world.cepi.particle.extra.BlockState
 
 
 object AcidMushroom {
@@ -43,9 +48,25 @@ object AcidMushroom {
                     event.player.instance.breakBlock( event.player, event.blockPosition, BlockFace.TOP)
                     event.player.instance.setBlock(event.blockPosition, Block.WATER)
 
+                    event.instance.scheduleNextTick {
+                        val particle = Particle.particle(
+                            type = ParticleType.BLOCK,
+                            count = 50,
+                            data = OffsetAndSpeed(0f, -0.5f, 0f ,10f),
+                            extraData = BlockState(Block.TUBE_CORAL)
+                        )
+
+                        event.player.particle(
+                            particle,
+                            event.blockPosition.add(0.5, 0.5, 0.5)
+                        )
+                    }
+
                 } else {
                     val block = event.block.withTag(durabilityLeft, value - 1)
                     event.player.instance.setBlock(event.blockPosition, block)
+
+
                 }
                 event.player.inventory.addItemStack(
                     Utils.createItem(Material.GLOW_BERRIES, Component.text("Acid Mushroom",
@@ -60,9 +81,25 @@ object AcidMushroom {
                     event.player.instance.breakBlock( event.player, event.blockPosition, BlockFace.TOP)
                     event.player.instance.setBlock(event.blockPosition, Block.AIR)
 
+                    event.instance.scheduleNextTick {
+                        val particle = Particle.particle(
+                            type = ParticleType.BLOCK,
+                            count = 50,
+                            data = OffsetAndSpeed(0f, -0.5f, 0f ,10f),
+                            extraData = BlockState(Block.CACTUS)
+                        )
+
+                        event.player.particle(
+                            particle,
+                            event.blockPosition.add(0.5, 0.5, 0.5)
+                        )
+                    }
+
                 } else {
                     val block = event.block.withTag(durabilityLeft, value - 1)
                     event.player.instance.setBlock(event.blockPosition, block)
+
+
                 }
                 event.player.inventory.addItemStack(
                     Utils.createItem(Material.GREEN_DYE, Component.text("Cactus",
