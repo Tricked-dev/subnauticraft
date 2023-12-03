@@ -38,7 +38,6 @@ object RepairTool {
             )
         }
         .addListener(PlayerBlockInteractEvent::class.java) {event->
-            val inv = Inventory
             println("123!")
             event.player.scheduleNextTick {
                 event.player.swingMainHand()
@@ -135,11 +134,6 @@ object RepairTool {
                                 event.player.particle(
                                     particle,
                                     event.blockPosition.add(0.5, 0.5, 0.5)
-                                )
-
-                                event.instance.setBlock(
-                                    event.blockPosition,
-                                    event.block.withTag(timeLeft, tl - 1)
                                 )
                             },
                             TaskSchedule.tick((Math.random() * 10 +1).toInt()),

@@ -181,6 +181,15 @@ fun main(args: Array<String>) {
 
     placeSchemetic(instanceContainer, "spawn", Pos(-10.0, 40.0, -10.0))
     placeSchemetic(instanceContainer, "repairtool", Pos(10.0, 40.0, 10.0), Rotation.CLOCKWISE_180)
+    placeSchemetic(instanceContainer, "lasercutter", Pos(15.0, 40.0, 11.0), Rotation.CLOCKWISE_180)
+    instanceContainer.scheduleNextTick {
+        val toppos = Pos(14.0, 41.0,10.0);
+        instanceContainer.setBlock(
+            toppos,
+            instanceContainer.getBlock(toppos).withTag(LaserCuter.timeLeft, 75).withTag(LaserCuter.cutTag,false)
+        )
+    }
+
 
     val handler = EventNode.all("subnauticraft")
         .addListener<PlayerLoginEvent>(PlayerLoginEvent::class.java) { event: PlayerLoginEvent ->
@@ -213,6 +222,7 @@ fun main(args: Array<String>) {
     eventHandler.addChild(Food.events)
     eventHandler.addChild(Trapdoors.events)
     eventHandler.addChild(RepairTool.events)
+    eventHandler.addChild(LaserCuter.events)
     eventHandler.addChild(handler)
 
     OpenToLAN.open(OpenToLANConfig().eventCallDelay(Duration.of(1, TimeUnit.DAY)))
