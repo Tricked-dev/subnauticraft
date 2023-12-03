@@ -36,7 +36,6 @@ import world.cepi.particle.PacketFactory
 import world.cepi.particle.Particle
 import world.cepi.particle.ParticleType
 import world.cepi.particle.data.OffsetAndSpeed
-import world.cepi.particle.showParticle
 import java.nio.file.Path
 import java.time.Duration
 
@@ -61,7 +60,13 @@ fun entityLoL(instance: Instance, entityType: EntityType, pos: Pos) {
     val horse = Entity(entityType)
     horse.setTag(pickupableTag, true)
 
-    horse.setInstance(instance,pos)
+    horse.setInstance(
+        instance, pos.withYaw(
+            (Math.random() * 360).toFloat()
+        ).withPitch(
+            -180f
+        )
+    )
 }
 
 fun main(args: Array<String>) {
@@ -72,8 +77,6 @@ fun main(args: Array<String>) {
 
     val recipeManager = MinecraftServer.getRecipeManager()
     recipeManager.addRecipe(Titanium())
-
-
 
 
     val eventHandler = MinecraftServer.getGlobalEventHandler()
@@ -93,13 +96,13 @@ fun main(args: Array<String>) {
 
     val instanceContainer = instanceManager.createInstanceContainer(fullbright)
 
-        var done =false;
+    var done = false
 
     instanceContainer.setGenerator { unit: GenerationUnit ->
         unit.modifier().fillHeight(0, 40, Block.GRASS_BLOCK)
-        if(!done) {
+        if (!done) {
             unit.modifier().fill(Pos(0.0, 30.0, 0.0), Pos(5.0, 40.0, 5.0), Block.WATER)
-            done=true;
+            done = true
         }
     }
 
@@ -115,12 +118,12 @@ fun main(args: Array<String>) {
     instanceContainer.setBlock(
         Pos(6.0, 40.0, 3.0), Block.CACTUS
     )
-    instanceContainer.setBlock(Pos(2.0,30.0,2.0), Block.TUBE_CORAL)
-    instanceContainer.setBlock(Pos(3.0,30.0,2.0), Block.TUBE_CORAL)
-    instanceContainer.setBlock(Pos(4.0,30.0,2.0), Block.TUBE_CORAL)
-    instanceContainer.setBlock(Pos(4.0,30.0,3.0), Block.TUBE_CORAL)
-    instanceContainer.setBlock(Pos(4.0,30.0,4.0), Block.TUBE_CORAL)
-    instanceContainer.setBlock(Pos(3.0,30.0,3.0), Block.TUBE_CORAL)
+    instanceContainer.setBlock(Pos(2.0, 30.0, 2.0), Block.TUBE_CORAL)
+    instanceContainer.setBlock(Pos(3.0, 30.0, 2.0), Block.TUBE_CORAL)
+    instanceContainer.setBlock(Pos(4.0, 30.0, 2.0), Block.TUBE_CORAL)
+    instanceContainer.setBlock(Pos(4.0, 30.0, 3.0), Block.TUBE_CORAL)
+    instanceContainer.setBlock(Pos(4.0, 30.0, 4.0), Block.TUBE_CORAL)
+    instanceContainer.setBlock(Pos(3.0, 30.0, 3.0), Block.TUBE_CORAL)
 
     entityLoL(
         instanceContainer,
@@ -135,32 +138,32 @@ fun main(args: Array<String>) {
 
 
 
-    for(i in 0..10) {
+    for (i in 0..10) {
         for (j in 0..10) {
             entityLoL(
                 instanceContainer,
                 EntityType.CAT,
-                Pos(-1.0 + i.toFloat()/5, 40.0, -10.0 + (j.toFloat())/5)
+                Pos(-1.0 + i.toFloat() / 3, 40.0, -10.0 + (j.toFloat()) / 3)
             )
         }
     }
 
     instanceContainer.setBlock(
-        Pos(-6.0, 40.0, -4.0), Block.WHEAT.withProperty("age","6")
+        Pos(-6.0, 40.0, -4.0), Block.WHEAT.withProperty("age", "6")
     )
     instanceContainer.setBlock(
         Pos(-6.0, 39.0, -4.0), Block.FARMLAND
     )
 
     instanceContainer.setBlock(
-        Pos(-7.0, 40.0, -4.0), Block.WHEAT.withProperty("age","6")
+        Pos(-7.0, 40.0, -4.0), Block.WHEAT.withProperty("age", "6")
     )
     instanceContainer.setBlock(
         Pos(-7.0, 39.0, -4.0), Block.FARMLAND
     )
 
     instanceContainer.setBlock(
-        Pos(-8.0, 40.0, -4.0), Block.WHEAT.withProperty("age","6")
+        Pos(-8.0, 40.0, -4.0), Block.WHEAT.withProperty("age", "6")
     )
     instanceContainer.setBlock(
         Pos(-8.0, 39.0, -4.0), Block.FARMLAND
@@ -174,8 +177,8 @@ fun main(args: Array<String>) {
         ServerListPingHandler.handlePingEvent(event)
     }
 
-    fun placeSchemetic(instance: Instance, name:String, pos:Pos, rotation: Rotation = Rotation.NONE) {
-        var schematic = SchematicReader.read(Path.of("./schem/"+name+".schem"))
+    fun placeSchemetic(instance: Instance, name: String, pos: Pos, rotation: Rotation = Rotation.NONE) {
+        var schematic = SchematicReader.read(Path.of("./schem/" + name + ".schem"))
         schematic.build(rotation, null).apply(instance, pos.x.toInt(), pos.y.toInt(), pos.z.toInt(), null)
     }
 
@@ -183,10 +186,10 @@ fun main(args: Array<String>) {
     placeSchemetic(instanceContainer, "repairtool", Pos(10.0, 40.0, 10.0), Rotation.CLOCKWISE_180)
     placeSchemetic(instanceContainer, "lasercutter", Pos(15.0, 40.0, 11.0), Rotation.CLOCKWISE_180)
     instanceContainer.scheduleNextTick {
-        val toppos = Pos(14.0, 41.0,10.0);
+        val toppos = Pos(14.0, 41.0, 10.0)
         instanceContainer.setBlock(
             toppos,
-            instanceContainer.getBlock(toppos).withTag(LaserCuter.timeLeft, 75).withTag(LaserCuter.cutTag,false)
+            instanceContainer.getBlock(toppos).withTag(LaserCuter.timeLeft, 75).withTag(LaserCuter.cutTag, false)
         )
     }
 
