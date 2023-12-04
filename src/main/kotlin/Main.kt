@@ -7,6 +7,8 @@ import net.hollowcube.schem.SchematicReader
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import net.minestom.server.MinecraftServer
+import net.minestom.server.attribute.Attribute
+import net.minestom.server.attribute.AttributeModifier
 import net.minestom.server.coordinate.Point
 import net.minestom.server.coordinate.Pos
 import net.minestom.server.entity.Entity
@@ -106,7 +108,7 @@ fun main(args: Array<String>) {
         }
     }
 
-    instanceContainer.worldBorder.setDiameter(50.0, 20)
+//    instanceContainer.worldBorder.setDiameter(50.0, 20)
 
     instanceContainer.setBlock(
         Pos(1.0, 40.0, 1.0), Block.GLOWSTONE
@@ -185,20 +187,75 @@ fun main(args: Array<String>) {
     placeSchemetic(instanceContainer, "spawn", Pos(-10.0, 40.0, -10.0))
     placeSchemetic(instanceContainer, "repairtool", Pos(10.0, 40.0, 10.0), Rotation.CLOCKWISE_180)
     placeSchemetic(instanceContainer, "lasercutter", Pos(15.0, 40.0, 11.0), Rotation.CLOCKWISE_180)
+
+
+
+    fun loadChunkRange(instance: Instance, x1: Int, z1: Int, x2: Int, z2: Int) {
+        for (x in x1..x2) {
+            for (z in z1..z2) {
+                instance.loadChunk(x, z)
+            }
+        }
+    }
+
+    loadChunkRange(instanceContainer, -50,-50,50,50)
+
+
+
+
+
     instanceContainer.scheduleNextTick {
         val toppos = Pos(14.0, 41.0, 10.0)
         instanceContainer.setBlock(
             toppos,
             instanceContainer.getBlock(toppos).withTag(LaserCuter.timeLeft, 75).withTag(LaserCuter.cutTag, false)
         )
+        placeSchemetic(instanceContainer, "sea", Pos(70.0, 22.0, 200.0), Rotation.CLOCKWISE_180)
+
+        instanceContainer.scheduleNextTick {
+            fun fish() {
+                val f = Fish()
+                f.getAttribute(Attribute.MOVEMENT_SPEED).baseValue =(0.02+ (Math.random() * 0.3)).toFloat()
+
+                f.setInstance(
+                    instanceContainer, Pos(
+                        1.0,37.0,32.0
+                    )
+                )
+            }
+
+            fish()
+            fish()
+            fish()
+            fish()
+            fish()
+            fish()
+            fish()
+            fish()
+            fish()
+            fish()
+            fish()
+            fish()
+            fish()
+            fish()
+            fish()
+            fish()
+            fish()
+            fish()
+            fish()
+            fish()
+
+        }
     }
+
+
 
 
     val handler = EventNode.all("subnauticraft")
         .addListener<PlayerLoginEvent>(PlayerLoginEvent::class.java) { event: PlayerLoginEvent ->
             event.setSpawningInstance(instanceContainer)
-            event.player.gameMode = GameMode.SURVIVAL
-            event.player.respawnPoint = Pos(0.0, 42.0, 0.0)
+            event.player.gameMode = GameMode.CREATIVE
+            event.player.respawnPoint = Pos(0.0, 42.0, 23.0)
             val scheduler: Scheduler = event.player.scheduler()
             scheduler.scheduleNextTick {
                 event.player.food = 8
