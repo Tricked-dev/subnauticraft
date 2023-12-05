@@ -254,7 +254,7 @@ fun main(args: Array<String>) {
     val handler = EventNode.all("subnauticraft")
         .addListener<PlayerLoginEvent>(PlayerLoginEvent::class.java) { event: PlayerLoginEvent ->
             event.setSpawningInstance(instanceContainer)
-            event.player.gameMode = GameMode.CREATIVE
+            event.player.gameMode = GameMode.SURVIVAL
             event.player.respawnPoint = Pos(0.0, 42.0, 23.0)
             val scheduler: Scheduler = event.player.scheduler()
             scheduler.scheduleNextTick {
@@ -283,6 +283,7 @@ fun main(args: Array<String>) {
     eventHandler.addChild(Trapdoors.events)
     eventHandler.addChild(RepairTool.events)
     eventHandler.addChild(LaserCuter.events)
+    eventHandler.addChild(Flippers.events)
     eventHandler.addChild(handler)
 
     OpenToLAN.open(OpenToLANConfig().eventCallDelay(Duration.of(1, TimeUnit.DAY)))
