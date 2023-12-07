@@ -51,7 +51,6 @@ object Flippers {
         }.addListener(PlayerMoveEvent::class.java) { event: PlayerMoveEvent ->
             val player = event.player
             val swimming = player.instance.getBlock(player.position).isLiquid
-            println("${player.velocity}")
             if (swimming) {
                 if (player.hasTag(flipperSpeedTag)) {
                     val speed = player.getTag(flipperSpeedTag)

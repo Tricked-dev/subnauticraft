@@ -7,10 +7,19 @@ import net.minestom.server.entity.ai.goal.MeleeAttackGoal
 import net.minestom.server.entity.ai.goal.RandomStrollGoal
 import net.minestom.server.entity.ai.target.ClosestEntityTarget
 import net.minestom.server.entity.ai.target.LastEntityDamagerTarget
+import net.minestom.server.entity.pathfinding.Navigator
 import net.minestom.server.utils.time.TimeUnit
 
 
 class Fish: EntityCreature(EntityType.TROPICAL_FISH)  {
+
+    override fun getNavigator(): Navigator {
+        val nav =  super.getNavigator()
+        nav.pathingEntity.isAquatic = true;
+        nav.pathingEntity.isAvian = true;
+        return nav;
+    }
+
     init {
         addAIGroup(
             listOf(

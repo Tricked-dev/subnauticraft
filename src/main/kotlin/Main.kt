@@ -284,6 +284,7 @@ fun main(args: Array<String>) {
     eventHandler.addChild(RepairTool.events)
     eventHandler.addChild(LaserCuter.events)
     eventHandler.addChild(Flippers.events)
+    eventHandler.addChild(Scanner.events)
     eventHandler.addChild(handler)
 
     OpenToLAN.open(OpenToLANConfig().eventCallDelay(Duration.of(1, TimeUnit.DAY)))
