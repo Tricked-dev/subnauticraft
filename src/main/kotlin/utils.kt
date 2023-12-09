@@ -21,7 +21,6 @@ import dev.emortal.rayfast.vector.Vector3d
 object Utils {
     private val idTag = Tag.String("id")
     val weightTag = Tag.Integer("weight")
-    val nutishmentTag = Tag.Integer("nutishment")
     val pickupableTag = Tag.Boolean("pickupable")
 
     fun createItem(material: Material, name: Component, lore: Array<out Component> = emptyArray(), weight: Int = 1): ItemStack.Builder {
@@ -34,14 +33,7 @@ object Utils {
         return item
     }
 
-    fun createFoodItem(material: Material, name: Component, lore: Array<out Component> = emptyArray(), weight: Int = 1, nutishment: Int =1): ItemStack.Builder {
-        val item = createItem(material, name,  arrayOf(*lore, Component.text("Nutrition: $nutishment", NamedTextColor.GRAY)), weight)
-        item.setTag(nutishmentTag, nutishment)
-        return item
-    }
-
     private val boundingBoxToArea3dMap = HashMap<LinkedBoundingBox, Area3d>()
-
 
     init {
         Area3d.CONVERTER.register(LinkedBoundingBox::class.java) { box ->

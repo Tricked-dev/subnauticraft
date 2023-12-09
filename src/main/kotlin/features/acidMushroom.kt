@@ -1,5 +1,7 @@
 package dev.tricked.subnauticraft.features
 
+import dev.tricked.subnauticraft.FoodItem
+import dev.tricked.subnauticraft.Item
 import dev.tricked.subnauticraft.Utils
 import dev.tricked.subnauticraft.particle
 import net.kyori.adventure.text.Component
@@ -25,7 +27,32 @@ import world.cepi.particle.data.OffsetAndSpeed
 import world.cepi.particle.extra.BlockState
 
 
-object AcidMushroom {
+object Cactus: Item() {
+    override val material = Material.GREEN_DYE
+    override val name = Component.text("Cactus", NamedTextColor.GREEN)
+    override val lore = arrayOf(Component.text("Epic Cacus"))
+    override val weight = 2
+    override val id = "cactus"
+}
+
+object AcidMushroom: Item() {
+    override val material = Material.GLOW_BERRIES
+    override val name = Component.text("Acid Mushroom", NamedTextColor.GREEN)
+    override val lore = arrayOf(Component.text("Material used for batteries"))
+    override val weight = 1
+    override val id = "acidmushroom"
+}
+
+object LanternFruit: Item(), FoodItem {
+    override val material = Material.POTATO
+    override val name = Component.text("Lantern Fruit", NamedTextColor.GREEN)
+    override val lore = arrayOf(Component.text("very nurishing"))
+    override val weight = 4
+    override val id = "lanternfruit"
+    override val nurishment = 2
+}
+
+object AcidMushroomEvents {
     val durabilityLeft = Tag.Integer("durabilityLeft").defaultValue(3)
     val events = EventNode.all("mushroom")
         .addListener(InstanceRegisterEvent::class.java) {event ->
@@ -69,9 +96,7 @@ object AcidMushroom {
 
                 }
                 event.player.inventory.addItemStack(
-                    Utils.createItem(Material.GLOW_BERRIES, Component.text("Acid Mushroom",
-                        NamedTextColor.DARK_PURPLE
-                    )).build()
+                    AcidMushroom.create()
                 )
             }
 
@@ -102,9 +127,7 @@ object AcidMushroom {
 
                 }
                 event.player.inventory.addItemStack(
-                    Utils.createItem(Material.GREEN_DYE, Component.text("Cactus",
-                        NamedTextColor.DARK_GREEN
-                    ), arrayOf(Component.text("Very kewl", NamedTextColor.RED)), 2).build()
+                   Cactus.create()
                 )
             }
 
@@ -112,11 +135,7 @@ object AcidMushroom {
                 event.player.instance.breakBlock( event.player, event.blockPosition, BlockFace.TOP)
                 event.player.instance.setBlock(event.blockPosition, Block.AIR)
 
-                event.player.inventory.addItemStack(
-                    Utils.createFoodItem(Material.POTATO, Component.text("Lantern Fruit",
-                        NamedTextColor.DARK_GREEN
-                    ), arrayOf(Component.text("Very nurishing", NamedTextColor.RED)), 4, 8).build()
-                )
+                event.player.inventory.addItemStack(LanternFruit.create())
             }
         }
 }

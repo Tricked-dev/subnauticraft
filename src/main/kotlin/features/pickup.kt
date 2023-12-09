@@ -24,7 +24,7 @@ object Pickup {
             4.0,
             hitFilter = { it.hasTag(Utils.pickupableTag) },
             )
-        if (res != null) {
+        if(res == null)return@addListener
             val entity = res.first;
 
             val particle = Particle.particle(
@@ -50,7 +50,6 @@ object Pickup {
                         entity.remove()
                     }
             }, TaskSchedule.tick(50), TaskSchedule.stop())
-        }
     }
 
 }

@@ -1,6 +1,7 @@
 package dev.tricked.subnauticraft
 
 import dev.tricked.subnauticraft.Utils.pickupableTag
+import dev.tricked.subnauticraft.commands.ItemCommand
 import dev.tricked.subnauticraft.features.*
 import net.hollowcube.schem.Rotation
 import net.hollowcube.schem.SchematicReader
@@ -8,7 +9,6 @@ import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import net.minestom.server.MinecraftServer
 import net.minestom.server.attribute.Attribute
-import net.minestom.server.attribute.AttributeModifier
 import net.minestom.server.coordinate.Point
 import net.minestom.server.coordinate.Pos
 import net.minestom.server.entity.Entity
@@ -17,7 +17,9 @@ import net.minestom.server.entity.GameMode
 import net.minestom.server.entity.Player
 import net.minestom.server.event.EventNode
 import net.minestom.server.event.player.PlayerBlockInteractEvent
+import net.minestom.server.event.player.PlayerEntityInteractEvent
 import net.minestom.server.event.player.PlayerLoginEvent
+import net.minestom.server.event.player.PlayerPreEatEvent
 import net.minestom.server.event.server.ServerListPingEvent
 import net.minestom.server.extras.lan.OpenToLAN
 import net.minestom.server.extras.lan.OpenToLANConfig
@@ -38,6 +40,7 @@ import world.cepi.particle.PacketFactory
 import world.cepi.particle.Particle
 import world.cepi.particle.ParticleType
 import world.cepi.particle.data.OffsetAndSpeed
+import world.cepi.particle.extra.Item
 import java.nio.file.Path
 import java.time.Duration
 
@@ -73,6 +76,8 @@ fun entityLoL(instance: Instance, entityType: EntityType, pos: Pos) {
 
 fun main(args: Array<String>) {
     System.setProperty("minestom.use-new-chunk-sending", "true")
+    System.setProperty("minestom.entity-view-distance", "32");
+
 
     val minecraftServer = MinecraftServer.init()
 
@@ -83,14 +88,20 @@ fun main(args: Array<String>) {
 
     val eventHandler = MinecraftServer.getGlobalEventHandler()
     eventHandler.addChild(Oxygen.events)
-    eventHandler.addChild(AcidMushroom.events)
+    eventHandler.addChild(AcidMushroomEvents.events)
 
 
     val fullbright = DimensionType.builder(NamespaceID.from("minestom:subnauticraft"))
         .ambientLight(1.0f)
         .build()
 
-
+    val spawnItems = listOf(
+        Items.FINS,
+        Items.TANK,
+        Items.REPAIR_TOOL,
+        Items.SCANNER,
+        Items.LASER_CUTTER
+    )
 
     MinecraftServer.getDimensionTypeManager().addDimension(fullbright)
 
@@ -201,14 +212,11 @@ fun main(args: Array<String>) {
     loadChunkRange(instanceContainer, -50,-50,50,50)
 
 
-
-
-
     instanceContainer.scheduleNextTick {
         val toppos = Pos(14.0, 41.0, 10.0)
         instanceContainer.setBlock(
             toppos,
-            instanceContainer.getBlock(toppos).withTag(LaserCuter.timeLeft, 75).withTag(LaserCuter.cutTag, false)
+            instanceContainer.getBlock(toppos).withTag(LaserCutter.timeLeft, 75).withTag(LaserCutter.cutTag, false)
         )
         placeSchemetic(instanceContainer, "sea", Pos(70.0, 22.0, 200.0), Rotation.CLOCKWISE_180)
 
@@ -249,10 +257,13 @@ fun main(args: Array<String>) {
     }
 
 
+    val interactableItems = Items.entries.filter {it.item is InteractableItem}.map{it.item };
+    val foodItems = Items.entries.filter {it.item is FoodItem}.map{it.item };
 
+    println("$interactableItems")
 
     val handler = EventNode.all("subnauticraft")
-        .addListener<PlayerLoginEvent>(PlayerLoginEvent::class.java) { event: PlayerLoginEvent ->
+        .addListener(PlayerLoginEvent::class.java) { event ->
             event.setSpawningInstance(instanceContainer)
             event.player.gameMode = GameMode.SURVIVAL
             event.player.respawnPoint = Pos(0.0, 42.0, 23.0)
@@ -270,23 +281,83 @@ fun main(args: Array<String>) {
                     particle,
                     Pos(0.0, 42.0, 0.0)
                 )
-
+                for(item in spawnItems) {
+                    event.player.inventory.addItemStack(item.item.create())
+                }
             }
-        }.addListener(PlayerBlockInteractEvent::class.java) { event: PlayerBlockInteractEvent ->
+        }.addListener(PlayerBlockInteractEvent::class.java) { event ->
             if (event.block == Block.CRAFTING_TABLE) {
                 event.player.openInventory(Inventory(InventoryType.CRAFTING, "Fabricator (Open Book)"))
             }
+            for(item in interactableItems) {
+                val stack = when(event.hand) {
+                    Player.Hand.MAIN -> event.player.itemInMainHand
+                    Player.Hand.OFF -> event.player.itemInOffHand
+                    else -> continue
+                }
+                if(item.detect(stack)) {
+                    val item = item as InteractableItem
+                    item.blockInteract(event)
+                    break
+                }
+            }
+        }.addListener(PlayerEntityInteractEvent::class.java) { event ->
+            for(item in interactableItems) {
+                val stack = when(event.hand) {
+                    Player.Hand.MAIN -> event.player.itemInMainHand
+                    Player.Hand.OFF -> event.player.itemInOffHand
+                    else -> continue
+                }
+                if(item.detect(stack)) {
+                    val item = item as InteractableItem
+                    item.entityInteract(event)
+                    break
+                }
+            }
+        }.addListener(PlayerPreEatEvent::class.java) { event ->
+            event.isCancelled = true
+            for(item in foodItems) {
+                val stack = when(event.hand) {
+                    Player.Hand.MAIN -> event.player.itemInMainHand
+                    Player.Hand.OFF -> event.player.itemInOffHand
+                    else -> continue
+                }
+                if(item.detect(stack)) {
+                    val item = item as FoodItem
+
+                    event.player.food = (event.player.food + item.nurishment).coerceAtMost(20)
+
+                    if (event.hand == Player.Hand.OFF) {
+                        event.player.inventory.itemInOffHand = ItemStack.AIR
+                    } else {
+                        event.player.inventory.itemInMainHand = ItemStack.AIR
+                    }
+
+                    val particle = Particle.particle(
+                        type = ParticleType.ITEM,
+                        count = 500,
+                        data = OffsetAndSpeed(0f, 2f, 0f, 2f),
+                        extraData = Item(event.itemStack)
+                    )
+
+                    event.player.particle(
+                        particle,
+                        event.player.position.add(0.0,1.5,0.0)
+                    )
+                    break
+                }
+            }
+
         }
     eventHandler.addChild(Weight.events)
     eventHandler.addChild(Pickup.events)
-    eventHandler.addChild(Food.events)
     eventHandler.addChild(Trapdoors.events)
-    eventHandler.addChild(RepairTool.events)
-    eventHandler.addChild(LaserCuter.events)
+    eventHandler.addChild(RepairToolEvents.events)
     eventHandler.addChild(Flippers.events)
-    eventHandler.addChild(Scanner.events)
     eventHandler.addChild(handler)
 
+
+    MinecraftServer.getCommandManager().register(ItemCommand.command)
     OpenToLAN.open(OpenToLANConfig().eventCallDelay(Duration.of(1, TimeUnit.DAY)))
 
 
