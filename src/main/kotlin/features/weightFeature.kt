@@ -10,14 +10,14 @@ import net.minestom.server.tag.Tag
 object Weight {
     val updatingTag = Tag.Boolean("updating")
     val events = EventNode.all("weight").addListener(PlayerInventoryItemChangeEvent::class.java) { event ->
-        if(event.player.getTag(updatingTag) == true) return@addListener
+        if (event.player.getTag(updatingTag) == true) return@addListener
         event.player.setTag(updatingTag, true)
         println("A ${Utils.weightTag}")
         event.player.inventory.itemStacks.withIndex()
             .filter { it.value.material() == Material.BAMBOO }
             .forEach { event.player.inventory.setItemStack(it.index, ItemStack.AIR) }
         val totalWeight = event.player.inventory.itemStacks
-            .filter { !it.isAir  && it.material() != Material.BAMBOO}
+            .filter { !it.isAir && it.material() != Material.BAMBOO }
             .sumOf { it.getTag(Utils.weightTag) }
 //        if (!event.player.inventory.hel.isAir && event.player.inventory.cursorItem.material() != Material.BAMBOO) {
 //            totalWeight += event.player.inventory.cursorItem.getTag(Utils.weightTag)
@@ -26,8 +26,8 @@ object Weight {
         val totalCount = event.player.inventory.itemStacks.count { !it.isAir && it.material() != Material.BAMBOO }
         println("Totl count: $totalCount")
         val usableCount = 36;
-        val removeFrom = usableCount - totalWeight   + totalCount
-        for(i in removeFrom..<usableCount) {
+        val removeFrom = usableCount - totalWeight + totalCount
+        for (i in removeFrom..<usableCount) {
             println("Removing $i")
             event.player.inventory.setItemStack(i, ItemStack.of(Material.BAMBOO))
         }

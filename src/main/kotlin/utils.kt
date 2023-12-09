@@ -1,5 +1,8 @@
 package dev.tricked.subnauticraft
 
+import dev.emortal.rayfast.area.area3d.Area3d
+import dev.emortal.rayfast.area.area3d.Area3dRectangularPrism
+import dev.emortal.rayfast.vector.Vector3d
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import net.minestom.server.coordinate.Point
@@ -10,20 +13,19 @@ import net.minestom.server.instance.Instance
 import net.minestom.server.item.ItemStack
 import net.minestom.server.item.Material
 import net.minestom.server.tag.Tag
-import java.util.UUID
-import dev.emortal.rayfast.area.area3d.Area3d
-import dev.emortal.rayfast.area.area3d.Area3d.Area3dCombined
-import dev.emortal.rayfast.area.area3d.Area3dLike
-import dev.emortal.rayfast.area.area3d.Area3dRectangularPrism
-import dev.emortal.rayfast.casting.grid.GridCast
-import dev.emortal.rayfast.vector.Vector3d
+import java.util.*
 
 object Utils {
     private val idTag = Tag.String("id")
     val weightTag = Tag.Integer("weight")
     val pickupableTag = Tag.Boolean("pickupable")
 
-    fun createItem(material: Material, name: Component, lore: Array<out Component> = emptyArray(), weight: Int = 1): ItemStack.Builder {
+    fun createItem(
+        material: Material,
+        name: Component,
+        lore: Array<out Component> = emptyArray(),
+        weight: Int = 1
+    ): ItemStack.Builder {
         val item = ItemStack.builder(material).displayName(name).lore(
             *lore,
             Component.text("Weight $weight", NamedTextColor.GRAY)

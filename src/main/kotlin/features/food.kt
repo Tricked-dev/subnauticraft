@@ -1,20 +1,5 @@
 package dev.tricked.subnauticraft.features
 
-import dev.tricked.subnauticraft.Utils
-import dev.tricked.subnauticraft.particle
-import net.minestom.server.coordinate.Pos
-import net.minestom.server.entity.Player
-import net.minestom.server.event.EventNode
-import net.minestom.server.event.player.PlayerEatEvent
-import net.minestom.server.event.player.PlayerPreEatEvent
-import net.minestom.server.item.ItemStack
-import world.cepi.particle.Particle
-import world.cepi.particle.ParticleType
-import world.cepi.particle.data.OffsetAndSpeed
-import world.cepi.particle.extra.Dust
-import world.cepi.particle.extra.Item
-
-
 
 //object Food {
 //    val events = EventNode.all("food").addListener(

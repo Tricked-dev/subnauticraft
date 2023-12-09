@@ -56,7 +56,11 @@ object ServerListPingHandler {
         }
     }
 
-    private fun createEntry(label: String, value: String, textColor: NamedTextColor = NamedTextColor.GRAY): NamedAndIdentified {
+    private fun createEntry(
+        label: String,
+        value: String,
+        textColor: NamedTextColor = NamedTextColor.GRAY
+    ): NamedAndIdentified {
         return NamedAndIdentified.named(
             Component.text('-', NamedTextColor.DARK_GRAY)
                 .append(Component.text(" $label: ", NamedTextColor.GRAY))

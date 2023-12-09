@@ -11,10 +11,10 @@ import net.minestom.server.entity.pathfinding.Navigator
 import net.minestom.server.utils.time.TimeUnit
 
 
-class Fish: EntityCreature(EntityType.TROPICAL_FISH)  {
+class Fish : EntityCreature(EntityType.TROPICAL_FISH) {
 
     override fun getNavigator(): Navigator {
-        val nav =  super.getNavigator()
+        val nav = super.getNavigator()
         nav.pathingEntity.isAquatic = true;
         nav.pathingEntity.isAvian = true;
         return nav;
@@ -23,15 +23,15 @@ class Fish: EntityCreature(EntityType.TROPICAL_FISH)  {
     init {
         addAIGroup(
             listOf(
-                 MeleeAttackGoal(this, 1.6, 20, TimeUnit.SERVER_TICK), // Attack the target
-             RandomStrollGoal(this, 20) // Walk around
+                MeleeAttackGoal(this, 1.6, 20, TimeUnit.SERVER_TICK), // Attack the target
+                RandomStrollGoal(this, 20) // Walk around
             ),
-        listOf(
-             LastEntityDamagerTarget(this, 32f),
-            ClosestEntityTarget(this, 32.0) { entity ->
-                return@ClosestEntityTarget entity is Player
-            }
-        ))
+            listOf(
+                LastEntityDamagerTarget(this, 32f),
+                ClosestEntityTarget(this, 32.0) { entity ->
+                    return@ClosestEntityTarget entity is Player
+                }
+            ))
 
     }
 

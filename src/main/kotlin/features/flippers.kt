@@ -9,34 +9,31 @@ import net.minestom.server.attribute.Attribute
 import net.minestom.server.event.EventNode
 import net.minestom.server.event.inventory.InventoryCloseEvent
 import net.minestom.server.event.player.PlayerMoveEvent
-import net.minestom.server.event.player.PlayerSpawnEvent
 import net.minestom.server.event.player.PlayerUseItemEvent
 import net.minestom.server.item.Enchantment
 import net.minestom.server.item.ItemHideFlag
 import net.minestom.server.item.ItemStack
 import net.minestom.server.item.Material
-import net.minestom.server.potion.Potion
-import net.minestom.server.potion.PotionEffect
 import net.minestom.server.tag.Tag
 
-abstract class Fin: Item() {
+abstract class Fin : Item() {
     abstract val speed: Int
 
     override fun create(): ItemStack {
         return Utils.createItem(
             material,
             name,
-            arrayOf(*lore, Component.text("Speed: ${100+speed}%")),
+            arrayOf(*lore, Component.text("Speed: ${100 + speed}%")),
             weight
-        ).meta{meta ->
-            meta.enchantment(Enchantment.DEPTH_STRIDER,3)
+        ).meta { meta ->
+            meta.enchantment(Enchantment.DEPTH_STRIDER, 3)
             meta.hideFlag(ItemHideFlag.HIDE_ENCHANTS)
         }.build()
     }
 }
 
 
-object UltraGlideFins: Fin() {
+object UltraGlideFins : Fin() {
     override val material = Material.DIAMOND_BOOTS
     override val name = Component.text("Ultra Glide Fins", NamedTextColor.RED)
     override val weight = 1
@@ -45,7 +42,7 @@ object UltraGlideFins: Fin() {
     override val speed = 30
 }
 
-object Fins: Fin() {
+object Fins : Fin() {
     override val material = Material.IRON_BOOTS
     override val name = Component.text("Fins", NamedTextColor.RED)
     override val weight = 1
@@ -54,7 +51,7 @@ object Fins: Fin() {
     override val speed = 15
 }
 
-object SwimChargeFins: Fin() {
+object SwimChargeFins : Fin() {
     override val material = Material.GOLDEN_BOOTS
     override val name = Component.text("Swim Charge Fins", NamedTextColor.DARK_PURPLE)
     override val lore = arrayOf(Component.text("Generated energy from swimming"))
@@ -67,7 +64,7 @@ object SwimChargeFins: Fin() {
 object Flippers {
     val flipperSpeedTag = Tag.Integer("flipperSpeed").defaultValue(0)
     val events = EventNode.all("mushroom")
-       .addListener(PlayerMoveEvent::class.java) { event: PlayerMoveEvent ->
+        .addListener(PlayerMoveEvent::class.java) { event: PlayerMoveEvent ->
             val player = event.player
             val swimming = player.instance.getBlock(player.position).isLiquid
             if (swimming) {
@@ -84,7 +81,7 @@ object Flippers {
         .addListener(PlayerUseItemEvent::class.java) { event ->
             val boots = event.player.inventory.getItemStack(44)
             val item = Items.fromMaterial(boots.material())
-            if(item is Fin) {
+            if (item is Fin) {
                 event.player.setTag(flipperSpeedTag, item.speed)
             } else {
                 event.player.setTag(flipperSpeedTag, 0)
@@ -93,7 +90,7 @@ object Flippers {
         .addListener(InventoryCloseEvent::class.java) { event ->
             val boots = event.player.inventory.getItemStack(44)
             val item = Items.fromMaterial(boots.material())
-            if(item is Fin) {
+            if (item is Fin) {
                 event.player.setTag(flipperSpeedTag, item.speed)
             } else {
                 event.player.setTag(flipperSpeedTag, 0)

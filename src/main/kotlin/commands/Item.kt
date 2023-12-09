@@ -11,8 +11,8 @@ object ItemCommand : Kommand({
         sender.sendMessage("Available items: ${Items.entries.map { it.item.id }}")
     }
     val item = ArgumentWord("item").suggest {
-        println("${  Items.entries.map { it.item.id }}")
-       Items.entries.map { it.item.id }
+        println("${Items.entries.map { it.item.id }}")
+        Items.entries.map { it.item.id }
     }
 
     syntax(item) {

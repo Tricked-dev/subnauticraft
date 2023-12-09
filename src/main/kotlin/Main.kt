@@ -209,7 +209,7 @@ fun main(args: Array<String>) {
         }
     }
 
-    loadChunkRange(instanceContainer, -50,-50,50,50)
+    loadChunkRange(instanceContainer, -50, -50, 50, 50)
 
 
     instanceContainer.scheduleNextTick {
@@ -223,11 +223,11 @@ fun main(args: Array<String>) {
         instanceContainer.scheduleNextTick {
             fun fish() {
                 val f = Fish()
-                f.getAttribute(Attribute.MOVEMENT_SPEED).baseValue =(0.02+ (Math.random() * 0.3)).toFloat()
+                f.getAttribute(Attribute.MOVEMENT_SPEED).baseValue = (0.02 + (Math.random() * 0.3)).toFloat()
 
                 f.setInstance(
                     instanceContainer, Pos(
-                        1.0,37.0,32.0
+                        1.0, 37.0, 32.0
                     )
                 )
             }
@@ -257,8 +257,8 @@ fun main(args: Array<String>) {
     }
 
 
-    val interactableItems = Items.entries.filter {it.item is InteractableItem}.map{it.item };
-    val foodItems = Items.entries.filter {it.item is FoodItem}.map{it.item };
+    val interactableItems = Items.entries.filter { it.item is InteractableItem }.map { it.item };
+    val foodItems = Items.entries.filter { it.item is FoodItem }.map { it.item };
 
     println("$interactableItems")
 
@@ -281,7 +281,7 @@ fun main(args: Array<String>) {
                     particle,
                     Pos(0.0, 42.0, 0.0)
                 )
-                for(item in spawnItems) {
+                for (item in spawnItems) {
                     event.player.inventory.addItemStack(item.item.create())
                 }
             }
@@ -289,26 +289,26 @@ fun main(args: Array<String>) {
             if (event.block == Block.CRAFTING_TABLE) {
                 event.player.openInventory(Inventory(InventoryType.CRAFTING, "Fabricator (Open Book)"))
             }
-            for(item in interactableItems) {
-                val stack = when(event.hand) {
+            for (item in interactableItems) {
+                val stack = when (event.hand) {
                     Player.Hand.MAIN -> event.player.itemInMainHand
                     Player.Hand.OFF -> event.player.itemInOffHand
                     else -> continue
                 }
-                if(item.detect(stack)) {
+                if (item.detect(stack)) {
                     val item = item as InteractableItem
                     item.blockInteract(event)
                     break
                 }
             }
         }.addListener(PlayerEntityInteractEvent::class.java) { event ->
-            for(item in interactableItems) {
-                val stack = when(event.hand) {
+            for (item in interactableItems) {
+                val stack = when (event.hand) {
                     Player.Hand.MAIN -> event.player.itemInMainHand
                     Player.Hand.OFF -> event.player.itemInOffHand
                     else -> continue
                 }
-                if(item.detect(stack)) {
+                if (item.detect(stack)) {
                     val item = item as InteractableItem
                     item.entityInteract(event)
                     break
@@ -316,13 +316,13 @@ fun main(args: Array<String>) {
             }
         }.addListener(PlayerPreEatEvent::class.java) { event ->
             event.isCancelled = true
-            for(item in foodItems) {
-                val stack = when(event.hand) {
+            for (item in foodItems) {
+                val stack = when (event.hand) {
                     Player.Hand.MAIN -> event.player.itemInMainHand
                     Player.Hand.OFF -> event.player.itemInOffHand
                     else -> continue
                 }
-                if(item.detect(stack)) {
+                if (item.detect(stack)) {
                     val item = item as FoodItem
 
                     event.player.food = (event.player.food + item.nurishment).coerceAtMost(20)
@@ -342,7 +342,7 @@ fun main(args: Array<String>) {
 
                     event.player.particle(
                         particle,
-                        event.player.position.add(0.0,1.5,0.0)
+                        event.player.position.add(0.0, 1.5, 0.0)
                     )
                     break
                 }

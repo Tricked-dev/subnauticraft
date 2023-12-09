@@ -6,7 +6,6 @@ import dev.tricked.subnauticraft.Utils
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import net.minestom.server.event.EventNode
-import net.minestom.server.event.player.PlayerLoginEvent
 import net.minestom.server.event.player.PlayerPacketEvent
 import net.minestom.server.item.ItemStack
 import net.minestom.server.item.Material
@@ -17,8 +16,8 @@ val durationLeft = Tag.Integer("durationLeft")
 val swimmingSince = Tag.Long("swimmingSince")
 
 abstract class Tank : Item() {
-    abstract val capacity:Int;
-    override val weight =4
+    abstract val capacity: Int;
+    override val weight = 4
 
     override fun create(): ItemStack {
         return Utils.createItem(
@@ -26,15 +25,14 @@ abstract class Tank : Item() {
             name,
             arrayOf(*lore, Component.text("Capacity: $capacity")),
             weight
-        ).meta {
-            meta ->
+        ).meta { meta ->
             meta.set(durationLeft, capacity)
             meta.set(swimmingSince, -1)
         }.build()
     }
 }
 
-object StandardTank: Tank() {
+object StandardTank : Tank() {
     override val material = Material.LEATHER_CHESTPLATE
     override val name = Component.text("Standard O₂ Tank", NamedTextColor.GOLD)
     override val lore = arrayOf(Component.text("O2 mix. Compressed breathable air."))
@@ -42,7 +40,7 @@ object StandardTank: Tank() {
     override val capacity = 30
 }
 
-object HighCapacityTank: Tank() {
+object HighCapacityTank : Tank() {
     override val material = Material.IRON_CHESTPLATE
     override val name = Component.text("High Capacity O₂ Tank", NamedTextColor.GOLD)
     override val lore = arrayOf(Component.text("O2 mix. Highly Compressed breathable air."))
@@ -50,7 +48,7 @@ object HighCapacityTank: Tank() {
     override val capacity = 90
 }
 
-object LightWeightHighCapacityTank: Tank() {
+object LightWeightHighCapacityTank : Tank() {
     override val material = Material.CHAINMAIL_CHESTPLATE
     override val name = Component.text("Light Weight O² Tank", NamedTextColor.GOLD)
     override val lore = arrayOf(Component.text("O2 mix. Lightweight breathable air."))
@@ -58,7 +56,7 @@ object LightWeightHighCapacityTank: Tank() {
     override val capacity = 90
 }
 
-object UltraHighCapacityTank: Tank() {
+object UltraHighCapacityTank : Tank() {
     override val material = Material.GOLDEN_CHESTPLATE
     override val name = Component.text("Ultra High Capacity O² Tank", NamedTextColor.GOLD)
     override val lore = arrayOf(Component.text("Additional air capacity."))
@@ -73,9 +71,9 @@ object Oxygen {
             val player = event.player
             if (packet is ClientPlayerPositionPacket) {
                 val inventory = player.inventory
-                if(inventory.chestplate.isAir) return@addListener
+                if (inventory.chestplate.isAir) return@addListener
                 val tank = Items.fromMaterial(inventory.chestplate.material())
-                if(tank !is Tank) return@addListener
+                if (tank !is Tank) return@addListener
                 val seconds = tank.capacity;
                 val since = inventory.chestplate.getTag(swimmingSince)
                 val swimming = player.instance.getBlock(player.position).isLiquid

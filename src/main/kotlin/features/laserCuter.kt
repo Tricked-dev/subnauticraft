@@ -2,19 +2,11 @@ package dev.tricked.subnauticraft.features
 
 import dev.tricked.subnauticraft.InteractableItem
 import dev.tricked.subnauticraft.Item
-import dev.tricked.subnauticraft.Utils
 import dev.tricked.subnauticraft.particle
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
-import net.minestom.server.entity.Player
-import net.minestom.server.event.EventNode
-import net.minestom.server.event.item.ItemDropEvent
 import net.minestom.server.event.player.PlayerBlockInteractEvent
-import net.minestom.server.event.player.PlayerEntityInteractEvent
-import net.minestom.server.event.player.PlayerLoginEvent
-import net.minestom.server.event.player.PlayerSwapItemEvent
 import net.minestom.server.instance.block.Block
-import net.minestom.server.item.ItemStack
 import net.minestom.server.item.Material
 import net.minestom.server.tag.Tag
 import net.minestom.server.timer.TaskSchedule

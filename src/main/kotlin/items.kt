@@ -11,7 +11,7 @@ import net.minestom.server.item.ItemMeta
 import net.minestom.server.item.ItemStack
 import net.minestom.server.item.Material
 
-enum class Items(val item:Item) {
+enum class Items(val item: Item) {
     FINS(Fins),
     ULTRA_GLIDE_FINS(UltraGlideFins),
     SWIM_CHARGE_FINS(SwimChargeFins),
@@ -26,12 +26,13 @@ enum class Items(val item:Item) {
     DOUBLE_TANK(HighCapacityTank),
     PLASTIC_TANK(LightWeightHighCapacityTank),
     HIGH_CAPACITY_TANK(UltraHighCapacityTank);
+
     companion object {
         @JvmStatic
-        fun fromMaterial(material: Material) :Item?{
-            for(item in Items.values()) {
-                if(item.item.material == material) {
-                    return  item.item
+        fun fromMaterial(material: Material): Item? {
+            for (item in Items.values()) {
+                if (item.item.material == material) {
+                    return item.item
                 }
             }
             return null
@@ -80,6 +81,6 @@ interface InteractableItem {
     fun use(event: PlayerEntityInteractEvent) {};
 }
 
-interface FoodItem  {
+interface FoodItem {
     val nurishment: Int
 }
