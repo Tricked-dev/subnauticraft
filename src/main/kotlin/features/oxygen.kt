@@ -1,34 +1,40 @@
 package dev.tricked.subnauticraft.features
 
-import dev.tricked.subnauticraft.Item
-import dev.tricked.subnauticraft.Items
-import dev.tricked.subnauticraft.Utils
+import dev.tricked.subnauticraft.*
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
+import net.minestom.server.entity.Player
 import net.minestom.server.event.EventNode
+import net.minestom.server.event.player.PlayerMoveEvent
 import net.minestom.server.event.player.PlayerPacketEvent
 import net.minestom.server.item.ItemStack
 import net.minestom.server.item.Material
 import net.minestom.server.network.packet.client.play.ClientPlayerPositionPacket
 import net.minestom.server.tag.Tag
+import net.minestom.server.timer.TaskSchedule
+import net.minestom.server.utils.inventory.PlayerInventoryUtils
+import world.cepi.kstom.item.set
 
-val durationLeft = Tag.Integer("durationLeft")
-val swimmingSince = Tag.Long("swimmingSince")
+val oxygen = Tag.Integer("oxygen")
 
 abstract class Tank : Item() {
-    abstract val capacity: Int;
-    override val weight = 4
+    abstract val capacity: Int
+    override val weight = 6
+    open val slowness = 20
 
     override fun create(): ItemStack {
         return Utils.createItem(
             material,
             name,
-            arrayOf(*lore, Component.text("Capacity: $capacity")),
+            lore(capacity),
             weight
         ).meta { meta ->
-            meta.set(durationLeft, capacity)
-            meta.set(swimmingSince, -1)
+            meta.set(oxygen, capacity*10)
         }.build()
+    }
+
+    fun lore(left: Int): List<Component> {
+        return listOf(*lore(), Component.text("Capacity: $left/$capacity"))
     }
 }
 
@@ -54,6 +60,7 @@ object LightWeightHighCapacityTank : Tank() {
     override val lore = arrayOf(Component.text("O2 mix. Lightweight breathable air."))
     override val id = "plastictank"
     override val capacity = 90
+    override val slowness = 5
 }
 
 object UltraHighCapacityTank : Tank() {
@@ -64,35 +71,75 @@ object UltraHighCapacityTank : Tank() {
     override val capacity = 180
 }
 
+fun Player.isLiquid(): Boolean {
+    return this.instance.getBlock(this.position).isLiquid
+}
+
 object Oxygen {
+    val swimmingTag = Tag.Boolean("swimming").defaultValue(false)
     val events = EventNode.all("oxygen")
-        .addListener(PlayerPacketEvent::class.java) { event: PlayerPacketEvent ->
-            val packet = event.packet
+        .addListener(PlayerMoveEvent::class.java) { event ->
             val player = event.player
-            if (packet is ClientPlayerPositionPacket) {
-                val inventory = player.inventory
-                if (inventory.chestplate.isAir) return@addListener
-                val tank = Items.fromMaterial(inventory.chestplate.material())
-                if (tank !is Tank) return@addListener
-                val seconds = tank.capacity;
-                val since = inventory.chestplate.getTag(swimmingSince)
-                val swimming = player.instance.getBlock(player.position).isLiquid
+            val inventory = player.inventory
 
-                if (swimming) {
-                    if (since == -1L) inventory.chestplate =
-                        inventory.chestplate.withTag(swimmingSince, System.currentTimeMillis())
 
-                    if (seconds == null || System.currentTimeMillis() - since > (seconds * 1000)) {
-                        player.entityMeta.airTicks = 0
-                    } else {
-                        val remainingAirTicks = (seconds * 20 - (System.currentTimeMillis() - since) / 50).toInt()
-                        player.entityMeta.airTicks = remainingAirTicks.coerceAtLeast(0)
-                        player.level = (remainingAirTicks / 20).coerceAtLeast(0)
+            val swimming = player.isLiquid()
+            val swimTag = player.getTag(swimmingTag)
+            if (swimTag && !swimming) {
+                player.inventory.itemStacks.forEachIndexed { index, itemStack ->
+                    val item = Items.fromMaterial(itemStack.material())
+                    if (item is WaterEventsItem) {
+                        val res = item.onLeaveWater(event, itemStack)
+                        if (res != null) {
+                            inventory.setItemStack(index, res)
+                        }
                     }
-                } else {
-                    inventory.chestplate = inventory.chestplate.withTag(swimmingSince, -1)
-                    player.level = 0
+
+                }
+
+
+                player.scheduler().submitTask {
+                    if(player.isLiquid()) return@submitTask TaskSchedule.stop()
+                    player.inventory.itemStacks.forEachIndexed { index, itemStack ->
+                        val item = Items.fromMaterial(itemStack.material())
+                        if (item is Tank) {
+                            val newAirTicks = ((itemStack.getTag(oxygen) ?: 0  )+ 8).coerceAtMost(item.capacity *10)
+                            player.inventory.setItemStack(
+                                index,
+                                itemStack.withLore(item.lore((newAirTicks/10))).withTag(oxygen, newAirTicks)
+                            )
+
+                        }
+                    }
+                    return@submitTask TaskSchedule.millis(200)
+                }
+            } else if (!swimTag && swimming) {
+                player.inventory.itemStacks.forEachIndexed { index, itemStack ->
+                    val item = Items.fromMaterial(itemStack.material())
+                    if (item is WaterEventsItem) {
+                        val res = item.onEnterWater(event, itemStack)
+                        if (res != null) {
+                            inventory.setItemStack(index, res)
+                        }
+                    }
+                }
+
+                player.scheduler().submitTask {
+                    if(!player.isLiquid()) return@submitTask TaskSchedule.stop()
+                    player.inventory.itemStacks.forEachIndexed { index, itemStack ->
+                        if(index != PlayerInventoryUtils.CHESTPLATE_SLOT) return@forEachIndexed
+                        val item = Items.fromMaterial(itemStack.material())
+                        if (item is Tank) {
+                            val newAirTicks = ((itemStack.getTag(oxygen) ?: 0  ) - 2).coerceAtLeast(0)
+                            player.inventory.setItemStack(
+                                index,
+                                itemStack.withLore(item.lore((newAirTicks/10))).withTag(oxygen, newAirTicks)
+                            )
+                        }
+                    }
+                    return@submitTask TaskSchedule.millis(200)
                 }
             }
+            player.setTag(swimmingTag, swimming)
         }
 }
