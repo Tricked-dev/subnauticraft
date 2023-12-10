@@ -91,6 +91,7 @@ object Oxygen {
                     }
                 } else {
                     inventory.chestplate = inventory.chestplate.withTag(swimmingSince, -1)
+                    player.level = 0
                 }
             }
         }

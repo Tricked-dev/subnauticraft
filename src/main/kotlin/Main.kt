@@ -227,7 +227,7 @@ fun main(args: Array<String>) {
 
                 f.setInstance(
                     instanceContainer, Pos(
-                        1.0, 37.0, 32.0
+                        20.0, 37.0, 52.0
                     )
                 )
             }
@@ -259,8 +259,6 @@ fun main(args: Array<String>) {
 
     val interactableItems = Items.entries.filter { it.item is InteractableItem }.map { it.item };
     val foodItems = Items.entries.filter { it.item is FoodItem }.map { it.item };
-
-    println("$interactableItems")
 
     val handler = EventNode.all("subnauticraft")
         .addListener(PlayerLoginEvent::class.java) { event ->
@@ -356,7 +354,6 @@ fun main(args: Array<String>) {
     eventHandler.addChild(Flippers.events)
     eventHandler.addChild(handler)
 
-
     MinecraftServer.getCommandManager().register(ItemCommand.command)
     OpenToLAN.open(OpenToLANConfig().eventCallDelay(Duration.of(1, TimeUnit.DAY)))
 
@@ -367,6 +364,7 @@ fun main(args: Array<String>) {
 fun Player.particle(particle: Particle<*, *>, renderer: Point) {
     this.playerConnection.sendPacket(PacketFactory.createParticlePacket(particle, renderer))
 }
+
 
 
 //

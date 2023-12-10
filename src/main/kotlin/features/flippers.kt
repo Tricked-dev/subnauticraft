@@ -23,12 +23,16 @@ abstract class Fin : Item() {
         return Utils.createItem(
             material,
             name,
-            arrayOf(*lore, Component.text("Speed: ${100 + speed}%")),
+            lore(speed).toList(),
             weight
         ).meta { meta ->
             meta.enchantment(Enchantment.DEPTH_STRIDER, 3)
             meta.hideFlag(ItemHideFlag.HIDE_ENCHANTS)
         }.build()
+    }
+
+    fun lore(speed: Int): Array<out Component> {
+        return arrayOf(*lore, Component.text("Speed: ${100 + speed}%"))
     }
 }
 
@@ -70,7 +74,6 @@ object Flippers {
             if (swimming) {
                 if (player.hasTag(flipperSpeedTag)) {
                     val speed = player.getTag(flipperSpeedTag)
-                    println("${speed.toFloat() / 1000}")
                     player.getAttribute(Attribute.MOVEMENT_SPEED).baseValue = 0.1f + speed.toFloat() / 1000
                 }
             } else {

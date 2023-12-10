@@ -2,10 +2,12 @@ package dev.tricked.subnauticraft
 
 import dev.tricked.subnauticraft.features.*
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.format.NamedTextColor
 import net.minestom.server.entity.Player
 import net.minestom.server.event.item.ItemDropEvent
 import net.minestom.server.event.player.PlayerBlockInteractEvent
 import net.minestom.server.event.player.PlayerEntityInteractEvent
+import net.minestom.server.event.player.PlayerMoveEvent
 import net.minestom.server.event.player.PlayerSwapItemEvent
 import net.minestom.server.item.ItemMeta
 import net.minestom.server.item.ItemStack
@@ -51,7 +53,7 @@ abstract class Item {
         return Utils.createItem(
             material,
             name,
-            lore,
+            lore().toList(),
             weight
         ).meta(this::meta).build()
     }
@@ -71,6 +73,10 @@ abstract class Item {
     fun detect(material: Material): Boolean {
         return material == this.material
     }
+
+    fun lore(): Array<out Component> {
+        return arrayOf(*lore, Component.text("Weight $weight", NamedTextColor.GRAY))
+    }
 }
 
 interface InteractableItem {
@@ -79,6 +85,12 @@ interface InteractableItem {
     fun swap(event: PlayerSwapItemEvent) {};
     fun drop(event: ItemDropEvent) {};
     fun use(event: PlayerEntityInteractEvent) {};
+}
+
+interface WaterEventsItem {
+    fun onEnterWater(player: PlayerMoveEvent, item: ItemStack):ItemStack?
+
+    fun onLeaveWater(player: PlayerMoveEvent, item: ItemStack):ItemStack?
 }
 
 interface FoodItem {

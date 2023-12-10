@@ -23,13 +23,11 @@ object Utils {
     fun createItem(
         material: Material,
         name: Component,
-        lore: Array<out Component> = emptyArray(),
+        lore: List<out Component> = emptyList(),
         weight: Int = 1
     ): ItemStack.Builder {
         val item = ItemStack.builder(material).displayName(name).lore(
-            *lore,
-            Component.text("Weight $weight", NamedTextColor.GRAY)
-        )
+lore        )
         item.setTag(idTag, UUID.randomUUID().toString())
         item.setTag(weightTag, weight)
         return item

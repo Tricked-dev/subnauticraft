@@ -62,7 +62,6 @@ object AcidMushroomEvents {
             event.isCancelled = true
         }
         .addListener(PlayerBlockInteractEvent::class.java) { event: PlayerBlockInteractEvent ->
-            println("Event! ${event.block} ${event.block.name()}")
             if (event.block.name() == "minecraft:tube_coral") {
                 val value = event.block.getTag(durabilityLeft)
                 if (value == 1) {

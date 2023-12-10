@@ -31,7 +31,6 @@ object RepairTool : Item(), InteractableItem {
             val offset = 1.0
             var blockPosition = event.blockPosition
 
-            println("Block ${event.block}")
 
             val face = BlockFace.valueOf(event.block.getProperty("facing").uppercase())
 
