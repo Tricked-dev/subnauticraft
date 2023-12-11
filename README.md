@@ -8,6 +8,10 @@ I'm looking for people to collaborate with if you want to help create a map, add
 
 No public instance is hosted at the moment im planning to do that once there's actually some content.
 
+## [GitHub Project](https://github.com/users/Tricked-dev/projects/5)
+
+You can view what's been done and needs to be done this list is not complete though and there's much more that might need to be done.
+
 ## License
 
 AGPL-3.0
