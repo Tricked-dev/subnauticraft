@@ -3,6 +3,9 @@ package dev.tricked.subnauticraft.features
 import dev.tricked.subnauticraft.*
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
+import net.minestom.server.attribute.Attribute
+import net.minestom.server.attribute.AttributeModifier
+import net.minestom.server.attribute.AttributeOperation
 import net.minestom.server.entity.Player
 import net.minestom.server.event.EventNode
 import net.minestom.server.event.player.PlayerMoveEvent
@@ -14,6 +17,7 @@ import net.minestom.server.tag.Tag
 import net.minestom.server.timer.TaskSchedule
 import net.minestom.server.utils.inventory.PlayerInventoryUtils
 import world.cepi.kstom.item.set
+import java.util.*
 
 val oxygen = Tag.Integer("oxygen")
 
@@ -75,31 +79,20 @@ fun Player.isLiquid(): Boolean {
     return this.instance.getBlock(this.position).isLiquid
 }
 
+val modifierUUID = UUID.randomUUID()
+
 object Oxygen {
     val swimmingTag = Tag.Boolean("swimming").defaultValue(false)
     val events = EventNode.all("oxygen")
         .addListener(PlayerMoveEvent::class.java) { event ->
             val player = event.player
-            val inventory = player.inventory
-
 
             val swimming = player.isLiquid()
             val swimTag = player.getTag(swimmingTag)
             if (swimTag && !swimming) {
-                player.inventory.itemStacks.forEachIndexed { index, itemStack ->
-                    val item = Items.fromMaterial(itemStack.material())
-                    if (item is WaterEventsItem) {
-                        val res = item.onLeaveWater(event, itemStack)
-                        if (res != null) {
-                            inventory.setItemStack(index, res)
-                        }
-                    }
-
-                }
-
-
                 player.scheduler().submitTask {
                     if(player.isLiquid()) return@submitTask TaskSchedule.stop()
+                    var weight = 0
                     player.inventory.itemStacks.forEachIndexed { index, itemStack ->
                         val item = Items.fromMaterial(itemStack.material())
                         if (item is Tank) {
@@ -108,24 +101,16 @@ object Oxygen {
                                 index,
                                 itemStack.withLore(item.lore((newAirTicks/10))).withTag(oxygen, newAirTicks)
                             )
-
+                            weight += item.slowness
                         }
                     }
+                    player.getAttribute(Attribute.MOVEMENT_SPEED).addModifier(AttributeModifier(modifierUUID, "tanks", -weight.toDouble()/5000, AttributeOperation.ADDITION))
                     return@submitTask TaskSchedule.millis(200)
                 }
             } else if (!swimTag && swimming) {
-                player.inventory.itemStacks.forEachIndexed { index, itemStack ->
-                    val item = Items.fromMaterial(itemStack.material())
-                    if (item is WaterEventsItem) {
-                        val res = item.onEnterWater(event, itemStack)
-                        if (res != null) {
-                            inventory.setItemStack(index, res)
-                        }
-                    }
-                }
-
                 player.scheduler().submitTask {
                     if(!player.isLiquid()) return@submitTask TaskSchedule.stop()
+                    var weight = 0
                     player.inventory.itemStacks.forEachIndexed { index, itemStack ->
                         if(index != PlayerInventoryUtils.CHESTPLATE_SLOT) return@forEachIndexed
                         val item = Items.fromMaterial(itemStack.material())
@@ -135,8 +120,10 @@ object Oxygen {
                                 index,
                                 itemStack.withLore(item.lore((newAirTicks/10))).withTag(oxygen, newAirTicks)
                             )
+                            weight += item.slowness
                         }
                     }
+                    player.getAttribute(Attribute.MOVEMENT_SPEED).addModifier(AttributeModifier(modifierUUID, "tanks", -weight.toDouble()/5000, AttributeOperation.ADDITION))
                     return@submitTask TaskSchedule.millis(200)
                 }
             }
