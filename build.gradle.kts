@@ -20,11 +20,11 @@ repositories {
 
 
 dependencies {
-    implementation("dev.hollowcube:minestom-ce:8715f4305d")
+    implementation("dev.hollowcube:minestom-ce:78cb62fa72")
     implementation("dev.hollowcube:schem:1.0.0")
     implementation("com.github.EmortalMC:Rayfast:7975ac5e4c")
-    implementation("com.github.Tricked-dev:Particable:9d4c3288d5")
-    implementation("com.github.Tricked-dev:KStom:4908447e5e")
+    implementation("com.github.Tricked-dev:Particable:e6467ca2bb")
+    implementation("com.github.Tricked-dev:KStom:00014c93fd")
 //    implementation("com.github.Project-Cepi:KStom:latest")
 //    implementation("com.github.Project-Cepi:Particable:acea414be2")
     runtimeOnly("ch.qos.logback:logback-core:1.3.5")

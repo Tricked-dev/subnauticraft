@@ -1,8 +1,6 @@
 package dev.tricked.subnauticraft.features
 
-import dev.tricked.subnauticraft.InteractableItem
-import dev.tricked.subnauticraft.Item
-import dev.tricked.subnauticraft.particle
+import dev.tricked.subnauticraft.*
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import net.minestom.server.event.player.PlayerBlockInteractEvent
@@ -16,7 +14,7 @@ import world.cepi.particle.data.OffsetAndSpeed
 import world.cepi.particle.extra.Dust
 
 
-object LaserCutter : Item(), InteractableItem {
+object LaserCutter : Item(), InteractableItem, CraftableItem {
     override val material = Material.DIAMOND_AXE
     override val name = Component.text("Laser Cutter", NamedTextColor.GREEN)
     override val lore = arrayOf(Component.text("Right click to cut doors"))
@@ -25,6 +23,8 @@ object LaserCutter : Item(), InteractableItem {
 
     val cutTag = Tag.Boolean("cut")
     val timeLeft = Tag.Integer("timeLeft").defaultValue(75)
+
+    override val requiredItems = listOf(Items.TITANIUM, Items.TITANIUM)
 
     override fun blockInteract(event: PlayerBlockInteractEvent) {
         if (!event.block.hasTag(cutTag)) return

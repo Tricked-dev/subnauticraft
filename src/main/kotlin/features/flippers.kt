@@ -1,5 +1,6 @@
 package dev.tricked.subnauticraft.features
 
+import dev.tricked.subnauticraft.CraftableItem
 import dev.tricked.subnauticraft.Item
 import dev.tricked.subnauticraft.Items
 import dev.tricked.subnauticraft.Utils
@@ -37,13 +38,14 @@ abstract class Fin : Item() {
 }
 
 
-object UltraGlideFins : Fin() {
+object UltraGlideFins : Fin(), CraftableItem {
     override val material = Material.DIAMOND_BOOTS
     override val name = Component.text("Ultra Glide Fins", NamedTextColor.RED)
     override val weight = 1
     override val id = "ultraglidefins"
 
     override val speed = 30
+    override val requiredItems = listOf(Items.FINS, Items.TITANIUM)
 }
 
 object Fins : Fin() {

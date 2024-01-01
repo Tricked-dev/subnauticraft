@@ -30,8 +30,10 @@ import net.minestom.server.inventory.Inventory
 import net.minestom.server.inventory.InventoryType
 import net.minestom.server.item.ItemStack
 import net.minestom.server.item.Material
+import net.minestom.server.network.packet.server.play.DeclareRecipesPacket
 import net.minestom.server.network.packet.server.play.DeclareRecipesPacket.Ingredient
 import net.minestom.server.recipe.ShapelessRecipe
+import net.minestom.server.tag.Tag
 import net.minestom.server.timer.Scheduler
 import net.minestom.server.utils.NamespaceID
 import net.minestom.server.utils.time.TimeUnit
@@ -43,6 +45,8 @@ import world.cepi.particle.data.OffsetAndSpeed
 import world.cepi.particle.extra.Item
 import java.nio.file.Path
 import java.time.Duration
+import java.util.*
+import java.util.List
 
 class Titanium : ShapelessRecipe(
     "titanium",
@@ -74,6 +78,17 @@ fun entityLoL(instance: Instance, entityType: EntityType, pos: Pos) {
     )
 }
 
+class Shapeless  : ShapelessRecipe(
+    "minecraft:sticks",
+    "sticks",
+    List.of<Ingredient>(Ingredient(List.of<ItemStack>(ItemStack.of(Material.STONE)))),
+    ItemStack.of(Material.STICK)
+) {
+    override fun shouldShow(player: Player): Boolean {
+        return true
+    }
+}
+
 fun main(args: Array<String>) {
     System.setProperty("minestom.use-new-chunk-sending", "true")
     System.setProperty("minestom.entity-view-distance", "32");
@@ -83,8 +98,36 @@ fun main(args: Array<String>) {
 
 
     val recipeManager = MinecraftServer.getRecipeManager()
-    recipeManager.addRecipe(Titanium())
-
+//    recipeManager.addRecipe(Titanium())
+//    for(item in Items.values()) {
+//
+//        if(item.item is CraftableItem) {
+//            val craftable = item.item as CraftableItem
+//
+//            println("${item.item.material.name()} name: ${item.item}")
+//            MinecraftServer.getRecipeManager().addRecipe(
+//                object : ShapelessRecipe(
+//                    item.item.id,
+//                    "subnauticraft",
+//                    listOf(
+//                        Ingredient(
+//                            listOf(
+//                                ItemStack.of(Material.DIAMOND_AXE).withDisplayName(Component.text("Titanium", NamedTextColor.DARK_PURPLE)).withTag(
+//                                    Tag.String("id"), UUID.randomUUID().toString())
+//                            )
+//                        )
+//                    ),
+//                ItemStack.of(Material.IRON_BARS)
+//
+//
+//                    ) {
+//                    override fun shouldShow(player: Player): Boolean {
+//                        return true
+//                    }
+//                }
+//            )
+//        }
+//    }
 
     val eventHandler = MinecraftServer.getGlobalEventHandler()
     eventHandler.addChild(Oxygen.events)
@@ -353,6 +396,7 @@ fun main(args: Array<String>) {
     eventHandler.addChild(RepairToolEvents.events)
     eventHandler.addChild(Flippers.events)
     eventHandler.addChild(handler)
+    eventHandler.addChild(CraftableEvents.events)
 
     MinecraftServer.getCommandManager().register(ItemCommand.command)
     OpenToLAN.open(OpenToLANConfig().eventCallDelay(Duration.of(1, TimeUnit.DAY)))

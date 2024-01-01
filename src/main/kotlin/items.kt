@@ -14,6 +14,8 @@ import net.minestom.server.item.ItemStack
 import net.minestom.server.item.Material
 
 enum class Items(val item: Item) {
+    TITANIUM(Titanium),
+
     FINS(Fins),
     ULTRA_GLIDE_FINS(UltraGlideFins),
     SWIM_CHARGE_FINS(SwimChargeFins),
@@ -85,6 +87,11 @@ interface InteractableItem {
     fun swap(event: PlayerSwapItemEvent) {};
     fun drop(event: ItemDropEvent) {};
     fun use(event: PlayerEntityInteractEvent) {};
+}
+
+
+interface CraftableItem {
+    val requiredItems: List<Items>
 }
 
 interface WaterEventsItem {
